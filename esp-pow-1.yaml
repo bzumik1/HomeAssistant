@@ -1,0 +1,129 @@
+# Configuration
+substitutions:
+  name: esp-pow-1
+
+esphome:
+  name: esp-pow-1
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret esp_home_api_password
+
+ota:
+  password: !secret esp_home_ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${name} Fallback Hotspot"
+    password: !secret esp_home_fallback_wifi_password
+
+captive_portal:
+
+# Binary sensors
+binary_sensor:
+  # Main button
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "${name} tlačítko"
+    id: "esp_pow_1_button"
+    on_press:
+      - switch.toggle: esp_pow_1_relay
+  
+  # Running indicator
+  - platform: template
+    name: "${name} indikátor běhu"
+    id: "esp_pow_1_running"
+    filters:
+      - delayed_off: 15s
+    lambda: |-
+      if (isnan(id(esp_pow_1_power).state)) {
+        return {};
+      } else if (id(esp_pow_1_power).state > 4) {
+        // Running
+        return true;
+      } else {
+        // Not running
+        return false;
+      }
+
+# Sensors
+sensor:
+  # Power meter
+  - platform: hlw8012
+    sel_pin: 5
+    cf_pin: 14
+    cf1_pin: 13
+    update_interval: 2s
+    current:
+      name: "${name} proud"
+      id: "esp_pow_1_current"
+    voltage:
+      name: "${name} napětí"
+      id: "esp_pow_1_voltage"
+    power:
+      name: "${name} příkon"
+      id: "esp_pow_1_power"
+      filters:
+        - multiply: 0.001
+      unit_of_measurement: kW
+    energy:
+      name: "${name} spotřeba"
+      id: "esp_pow_1_energy"       
+  
+  # Dayly power consumption
+  - platform: total_daily_energy
+    name: "${name} denní spotřeba"
+    id: "esp_pow_1_total_daily_consumption"
+    power_id: esp_pow_1_power
+
+  - platform: wifi_signal
+    name: "${name} signál"
+    id: "esp_pow_1_wifi_signal"
+    update_interval: 10s
+  
+  - platform: uptime
+    name: "${name} doba běhu"
+    id: "esp_pow_1_uptime"
+
+
+switch:
+  # Switch for Home Assistant
+  - platform: template
+    name: "${name} spínač"
+    id: "esp_pow_1_switch"
+    optimistic: true
+    restore_state: true
+    turn_on_action:
+      - switch.turn_on: esp_pow_1_relay
+    turn_off_action:
+      - switch.turn_off: esp_pow_1_relay
+  # Internal relay
+  - platform: gpio
+    id: "esp_pow_1_relay"
+    pin: GPIO12
+
+# Example configuration entry
+light:
+  - platform: status_led
+    name: "${name} stavová led"
+    id: "esp_pow_1_status_led"
+    pin: GPIO15
+
+time:
+  - platform: sntp
+    id: my_time
+    
