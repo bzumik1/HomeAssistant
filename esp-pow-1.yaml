@@ -82,7 +82,14 @@ sensor:
       unit_of_measurement: kW
     energy:
       name: "${name} spotřeba"
-      id: "esp_pow_1_energy"       
+      id: "esp_pow_1_energy"
+ 
+  - platform: wifi_signal
+    name: "${name} signál"
+    update_interval: 10s
+  
+  - platform: uptime
+    name: "${name} doba běhu"
   
   # Dayly power consumption
   - platform: total_daily_energy
