@@ -7,6 +7,8 @@ esp8266:
 
 # Enable logging
 logger:
+  #Turn off RX TX
+  baud_rate: 0
 
 # Enable Home Assistant API
 api:
@@ -22,7 +24,7 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "${name} Fallback Hotspot"
+    ssid: "${name}.o"
     password: !secret esp_home_fallback_wifi_password
 
 captive_portal:
@@ -34,58 +36,65 @@ button:
 
 output:
   - platform: gpio
-    pin: GPIO12
-    id: relay
+    pin: GPIO4
+    id: relay1
+  - platform: gpio
+    pin: GPIO5
+    id: relay2
 
 light:
   - platform: status_led
     name: "${name} stavová LED"
     icon: mdi:led-on
     pin:
-      number: GPIO4
+      number: GPIO12
       inverted: true
 
   - platform: binary
-    name: "${name} světlo"
+    name: "${name} světlo 1"
     icon: mdi:ceiling-light-multiple
-    id: mini_relay
-    output: relay
+    id: light1
+    output: relay1
+    restore_mode: RESTORE_DEFAULT_OFF
+  
+  - platform: binary
+    name: "${name} světlo 2"
+    icon: mdi:ceiling-light-multiple
+    id: light2
+    output: relay2
     restore_mode: RESTORE_DEFAULT_OFF
 
 binary_sensor:
-  # Wired switch
+  # Wired switch 1
   - platform: gpio
-    name: "${name} vypínač"
+    name: "${name} vypínač 1"
     icon: mdi:light-switch
-    id: the_switch
+    id: the_switch_1
     pin:
-      number: GPIO14
+      number: GPIO1
       mode: INPUT_PULLUP
       inverted: true
     on_state:
-      - light.toggle: mini_relay
+      - light.toggle: light1
 
-    on_multi_click:
-      - timing:
-          - ON for at most 0.5s
-          - OFF for at most 0.5s
-          - ON for at most 0.5s
-          - OFF for at most 0.5s
-          - ON for at most 0.5s
-          - OFF for at most 0.5s
-          - ON for at most 0.5s
-          - OFF for at most 0.5s
-          - ON for at most 0.5s
-          - OFF for at most 0.5s
-        then:
-          - button.press: reset
+  # Wired switch
+  - platform: gpio
+    name: "${name} vypínač 2"
+    icon: mdi:light-switch
+    id: the_switch_2
+    pin:
+      number: GPIO3
+      mode: INPUT_PULLUP
+      inverted: true
+    on_state:
+      - light.toggle: light2
 
   # Button on mini switch
   - platform: gpio
     name: "${name} tlačítko"
     icon: mdi:gesture-tap-button
     pin:
-      number: GPIO3
+      number: GPIO14
       mode: INPUT_PULLUP
       inverted: true
     on_multi_click:
@@ -93,7 +102,8 @@ binary_sensor:
           - ON for at most 1s
           - OFF for at least 0.2s
         then:
-          - light.toggle: mini_relay
+          - light.toggle: light1
+          - light.toggle: light2
       - timing:
           - ON for at least 4s
         then:
@@ -118,4 +128,4 @@ sensor:
 
 time:
   - platform: sntp
-    id: my_time  
+    id: my_time
