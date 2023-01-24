@@ -1,0 +1,5 @@
+# Configuration
+substitutions:
+  name: esp-switch-pow-2
+
+<<: !include templates/template-esp-switch-2g.yaml
