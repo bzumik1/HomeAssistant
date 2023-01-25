@@ -29,6 +29,16 @@ wifi:
 
 captive_portal:
 
+globals:
+  - id: dissable_relay1
+    type: boolean
+    restore_value: yes
+    initial_value: "false"
+  - id: dissable_relay2
+    type: boolean
+    restore_value: yes
+    initial_value: "false"
+
 button:
   - platform: factory_reset
     name: Resetování do továrního nastavení
@@ -75,9 +85,12 @@ binary_sensor:
       mode: INPUT_PULLUP
       inverted: true
     on_state:
-      - light.toggle: light1
+      lambda: | 
+        if(id(dissable_relay1)==false){
+          id(light1).toggle().perform();
+        }
 
-  # Wired switch
+  # Wired switch 2
   - platform: gpio
     name: "${name} vypínač 2"
     icon: mdi:light-switch
@@ -87,7 +100,10 @@ binary_sensor:
       mode: INPUT_PULLUP
       inverted: true
     on_state:
-      - light.toggle: light2
+      lambda: | 
+        if(id(dissable_relay2)==false){
+          id(light2).toggle().perform();
+        }
 
   # Button on mini switch
   - platform: gpio
@@ -111,6 +127,41 @@ binary_sensor:
 
   - platform: status
     name: "${name} stav"
+
+switch:
+  - platform: template
+    name: "Deaktivovat relay 1"
+    icon: mdi:electric-switch
+    entity_category: config
+    optimistic: true
+    restore_state: true
+    on_turn_on: 
+      then:
+        - globals.set: 
+            id: dissable_relay1
+            value: "true"
+    on_turn_off: 
+      then:
+        - globals.set: 
+            id: dissable_relay1
+            value: "false"
+  
+  - platform: template
+    name: "Deaktivovat relay 2"
+    icon: mdi:electric-switch
+    entity_category: config
+    optimistic: true
+    restore_state: true
+    on_turn_on: 
+      then:
+        - globals.set: 
+            id: dissable_relay2
+            value: "true"
+    on_turn_off: 
+      then:
+        - globals.set: 
+            id: dissable_relay2
+            value: "false"
 
 text_sensor:
   - platform: wifi_info
