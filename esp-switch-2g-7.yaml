@@ -1,0 +1,5 @@
+# Configuration
+substitutions:
+  name: esp-switch-2g-7
+
+<<: !include templates/template-esp-switch-2g.yaml
