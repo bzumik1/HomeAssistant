@@ -1,0 +1,13 @@
+<<: !include templates/template-esp-button-2g.yaml
+
+# Configuration
+substitutions:
+  name: "esp-vypinac-koupelna"
+
+  switch1_single_press: svetlo_v_koupelne_mistnost_klik
+  switch1_double_press: svetlo_v_koupelne_mistnost_dvojklik
+  switch1_long_press: svetlo_v_koupelne_mistnost_dlouhy_klik
+
+  switch2_single_press: svetlo_v_koupelne_zrcadlo_klik
+  switch2_double_press: svetlo_v_koupelne_zrcadlo_dvojklik
+  switch2_long_press: svetlo_v_koupelne_zrcadlo_dlouhy_klik

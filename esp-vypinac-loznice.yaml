@@ -2,7 +2,7 @@
 
 # Configuration
 substitutions:
-  name: esp-switch-2g-8
+  name: "esp-vypinac-loznice"
 
   switch1_single_press: svetlo_v_pracovne_klik
   switch1_double_press: svetlo_v_pracovne_dvojklik
