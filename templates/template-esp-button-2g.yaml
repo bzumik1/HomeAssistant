@@ -73,8 +73,8 @@ binary_sensor:
     on_multi_click:
       #Single press
       - timing:
-          - ON for at most 0.5s
-          - OFF for at least 0.2s
+          - ON for at most 700ms
+          - OFF for at least 210ms
         then:
           - homeassistant.service:
               service: script.turn_on
@@ -82,10 +82,10 @@ binary_sensor:
                 entity_id: script.${switch1_single_press}
       # Double press
       - timing:
-        - ON for at most 0.5s
-        - OFF for at most 0.2s
-        - ON for at most 0.5s
-        - OFF for at least 0.2s
+        - ON for at most 700ms
+        - OFF for at most 200ms
+        - ON for at most 700ms
+        - OFF for at least 200ms
         then:
           - homeassistant.service:
               service: script.turn_on
@@ -101,7 +101,7 @@ binary_sensor:
                 entity_id: script.${switch1_long_press}
       #Reset
       - timing:
-          - ON for at least 5s
+          - ON for at least 3s
         then:
           - switch.toggle: switch_relay1
 
@@ -117,8 +117,8 @@ binary_sensor:
     on_multi_click:
       # Single press
       - timing:
-          - ON for at most 0.5s
-          - OFF for at least 0.2s
+          - ON for at most 700ms
+          - OFF for at least 210ms
         then:
           - homeassistant.service:
               service: script.turn_on
@@ -126,10 +126,10 @@ binary_sensor:
                 entity_id: script.${switch2_single_press}
       # Double press
       - timing:
-          - ON for at most 0.5s
-          - OFF for at most 0.2s
-          - ON for at most 0.5s
-          - OFF for at least 0.2s
+        - ON for at most 700ms
+        - OFF for at most 200ms
+        - ON for at most 700ms
+        - OFF for at least 200ms
         then:
           - homeassistant.service:
               service: script.turn_on
@@ -145,7 +145,7 @@ binary_sensor:
                 entity_id: script.${switch2_long_press}
       # Reset press
       - timing:
-          - ON for at least 5s
+          - ON for at least 3s
         then:
           - switch.toggle: switch_relay2
 
