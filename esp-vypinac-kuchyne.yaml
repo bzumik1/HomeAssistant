@@ -5,7 +5,7 @@ substitutions:
   name: "esp-vypinac-kuchyne"
 
   switch1_single_press: svetlo_v_kuchyni_klik
-  switch1_double_press: svetlo_v_kuchyni_dvojklik
+  switch1_double_press: svetlo_kuchyne_dlouhy_klik
   switch1_long_press: svetlo_v_kuchyni_dlouhy_klik
 
   switch2_single_press: svetlo_v_obyvaku_klik
