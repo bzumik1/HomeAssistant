@@ -1,0 +1,105 @@
+substitutions:
+  name: esp-samsung-ac
+
+
+
+# BASIC CONFIGURATION  
+esphome:
+  name: ${name}
+
+esp32:
+  board: m5stack-atom
+
+web_server:
+  port: 80
+
+# Enable logging
+logger:
+
+api:
+  encryption:
+    key: !secret esp_home_api_password
+
+ota:
+  password: !secret esp_home_ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${name}.o"
+    password: !secret esp_home_fallback_wifi_password
+
+captive_portal:
+
+
+
+# AC CONFIGURATION  
+uart:
+  tx_pin: GPIO19
+  rx_pin: GPIO22
+  baud_rate: 9600
+  parity: EVEN
+
+external_components:
+  - source: github://lanwin/esphome_samsung_ac@main
+    components: [samsung_ac]
+
+samsung_ac:
+  devices:
+    # BEDROOM
+    - address: "20.00.00" # unit address
+
+      # You could use the ESPHome/Homeassist climate control
+      climate:
+        name: "Klimatizace - ložnice"
+
+      # And/or use seperate controls/sensors
+      room_temperature:
+        name: "Klimatizace - ložnice teplota"
+      room_humidity:
+        name: "Klimatizace - ložnice vlhkost"
+      target_temperature:
+        name: "Klimatizace - ložnice požadovaná teplota"
+      power:
+        name: "Klimatizace - ložnice vypínač"
+      mode:
+        name: "Klimatizace - ložnice mód"
+    
+    # LIVING ROOM
+    - address: "20.00.01" # unit address
+
+      # You could use the ESPHome/Homeassist climate control
+      climate:
+        name: "Klimatizace - obývák"
+
+      # And/or use seperate controls/sensors
+      room_temperature:
+        name: "Klimatizace - obývák teplota"
+      room_humidity:
+        name: "Klimatizace - obývák vlhkost"
+      target_temperature:
+        name: "Klimatizace - obývák požadovaná teplota"
+      power:
+        name: "Klimatizace - obývák vypínač"
+      mode:
+        name: "Klimatizace - obývák mód"
+
+
+
+# DEVICE INFO
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "${name} IP adresa"
+      icon: mdi:ip-network
+
+sensor:
+  - platform: wifi_signal
+    name: "${name} signál"
+    update_interval: 10s
+  
+  - platform: uptime
+    name: "${name} doba běhu"
