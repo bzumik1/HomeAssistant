@@ -61,6 +61,10 @@ light:
       inverted: true
 
 binary_sensor:
+  # Connection to HA
+  - platform: status
+    name: "${name} připojení k HA"
+
   # Wired switch 1
   - platform: gpio
     name: "${name} vypínač 1"
@@ -71,7 +75,7 @@ binary_sensor:
       mode: INPUT_PULLUP
       inverted: true
     on_multi_click:
-      #Single press
+      # Single press
       - timing:
           - ON for at most 700ms
           - OFF for at least 210ms
@@ -91,7 +95,7 @@ binary_sensor:
               service: script.turn_on
               data:
                 entity_id: script.${switch1_double_press}
-      #Long press
+      # Long press
       - timing:
         - ON for at least 1s
         then:
@@ -99,7 +103,7 @@ binary_sensor:
               service: script.turn_on
               data:
                 entity_id: script.${switch1_long_press}
-      #Reset
+      # Relay toggle
       - timing:
           - ON for at least 3s
         then:
@@ -135,7 +139,7 @@ binary_sensor:
               service: script.turn_on
               data:
                 entity_id: script.${switch2_double_press}
-      # Long click
+      # Long press
       - timing:
         - ON for at least 1s
         then:
@@ -143,7 +147,7 @@ binary_sensor:
               service: script.turn_on
               data:
                 entity_id: script.${switch2_long_press}
-      # Reset press
+      # Relay toggle
       - timing:
           - ON for at least 3s
         then:
@@ -164,9 +168,6 @@ binary_sensor:
         then:
           - switch.toggle: switch_relay1
           - switch.toggle: switch_relay2
-
-  - platform: status
-    name: "${name} stav"
 
 text_sensor:
   - platform: wifi_info
