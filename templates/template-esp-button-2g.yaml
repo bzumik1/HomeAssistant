@@ -77,7 +77,7 @@ binary_sensor:
     on_multi_click:
       # Single press
       - timing:
-          - ON for at most 700ms
+          - ON for at most 400ms
           - OFF for at least 210ms
         then:
           - homeassistant.service:
@@ -86,9 +86,9 @@ binary_sensor:
                 entity_id: script.${switch1_single_press}
       # Double press
       - timing:
-        - ON for at most 700ms
+        - ON for at most 400ms
         - OFF for at most 200ms
-        - ON for at most 700ms
+        - ON for at most 400ms
         - OFF for at least 200ms
         then:
           - homeassistant.service:
@@ -97,7 +97,7 @@ binary_sensor:
                 entity_id: script.${switch1_double_press}
       # Long press
       - timing:
-        - ON for at least 1s
+        - ON for at least 600ms
         then:
           - homeassistant.service:
               service: script.turn_on
@@ -105,7 +105,7 @@ binary_sensor:
                 entity_id: script.${switch1_long_press}
       # Relay toggle
       - timing:
-          - ON for at least 3s
+          - ON for at least 1500ms
         then:
           - switch.toggle: switch_relay1
 
@@ -121,7 +121,7 @@ binary_sensor:
     on_multi_click:
       # Single press
       - timing:
-          - ON for at most 700ms
+          - ON for at most 400ms
           - OFF for at least 210ms
         then:
           - homeassistant.service:
@@ -130,9 +130,9 @@ binary_sensor:
                 entity_id: script.${switch2_single_press}
       # Double press
       - timing:
-        - ON for at most 700ms
+        - ON for at most 400ms
         - OFF for at most 200ms
-        - ON for at most 700ms
+        - ON for at most 400ms
         - OFF for at least 200ms
         then:
           - homeassistant.service:
@@ -141,7 +141,7 @@ binary_sensor:
                 entity_id: script.${switch2_double_press}
       # Long press
       - timing:
-        - ON for at least 1s
+        - ON for at least 600ms
         then:
           - homeassistant.service:
               service: script.turn_on
@@ -149,7 +149,7 @@ binary_sensor:
                 entity_id: script.${switch2_long_press}
       # Relay toggle
       - timing:
-          - ON for at least 3s
+          - ON for at least 1500ms
         then:
           - switch.toggle: switch_relay2
 
