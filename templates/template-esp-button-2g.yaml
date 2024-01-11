@@ -104,7 +104,7 @@ binary_sensor:
                 entity_id: script.${switch1_double_press}
       # Long press
       - timing:
-        - ON for at least 600ms
+        - ON for at least 500ms
         then:
           - homeassistant.service:
               service: script.turn_on
@@ -154,7 +154,7 @@ binary_sensor:
                 entity_id: script.${switch2_double_press}
       # Long press
       - timing:
-        - ON for at least 600ms
+        - ON for at least 500ms
         then:
           - homeassistant.service:
               service: script.turn_on
