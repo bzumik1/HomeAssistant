@@ -109,24 +109,22 @@ output:
     pin: GPIO26
     id: dac2
 
+  - platform: template
+    id: dual_fan_output
+    type: float
+    write_action:
+      - lambda: |-
+          id(dac1).set_level(state);
+          id(dac2).set_level(state);
+          ESP_LOGD("custom", "Nastavuji dac1 na hodnotu: %f", state);
+          ESP_LOGD("custom", "Nastavuji dac2 na hodnotu: %f", state);
+
 fan:
   - platform: speed
     speed_count: 100
-    output: dac1
-    name: "${name} ventilátor nasávání"
+    output: dual_fan_output
+    name: "${name} ventilátor "
     id: fan_in
-    internal: true
-    preset_modes:
-      - "AUTO"
-      - "MANUAL"
-      - "BOOST"
-
-  - platform: speed
-    speed_count: 100
-    output: dac2
-    name: "${name} ventilátor výfuk"
-    id: fan_out
-    internal: true
     preset_modes:
       - "AUTO"
       - "MANUAL"

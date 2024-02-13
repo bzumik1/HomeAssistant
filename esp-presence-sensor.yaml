@@ -1,0 +1,217 @@
+substitutions:
+  name: esp-presence-sensor
+
+esphome:
+  name: ${name}
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret esp_home_api_password
+
+ota:
+  password: !secret esp_home_ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${name}.o"
+    password: !secret esp_home_fallback_wifi_password
+
+captive_portal:
+    
+
+uart:
+  id: ld2410_uart
+  tx_pin: 17
+  rx_pin: 16
+  baud_rate: 256000
+  parity: NONE
+  stop_bits: 1
+
+ld2410:
+  uart_id: ld2410_uart
+
+number:
+  - platform: ld2410
+    timeout:
+      name: "${name} timeout"
+    light_threshold:
+      name: "${name} světlo práh"
+    max_move_distance_gate:
+      name: "${name} maximální detekční vzdálenost - pohyb"
+    max_still_distance_gate:
+      name: "${name} maximální detekční vzdálenost - klid"
+    g0:
+      move_threshold:
+        name: 0m - 0.75m pohyb práh
+      still_threshold:
+        name: 0m - 0.75m klid práh
+    g1:
+      move_threshold:
+        name: 0.75m - 1.5m pohyb práh
+      still_threshold:
+        name: 0.75m - 1.5m klid práh
+    g2:
+      move_threshold:
+        name: 1.5m - 2.25m pohyb práh
+      still_threshold:
+        name: 1.5m - 2.25m klid práh
+    g3:
+      move_threshold:
+        name: 2.25m - 3.0m pohyb práh
+      still_threshold:
+        name: 2.25m - 3.0m klid práh
+    g4:
+      move_threshold:
+        name: 3.0m - 3.75m pohyb práh
+      still_threshold:
+        name: 3.0m - 3.75m klid práh
+    g5:
+      move_threshold:
+        name: 3.75m - 4.5m pohyb práh
+      still_threshold:
+        name: 3.75m - 4.5m klid práh
+    g6:
+      move_threshold:
+        name: 4.5m - 5.25m pohyb práh
+      still_threshold:
+        name: 4.5m - 5.25m klid práh
+    g7:
+      move_threshold:
+        name: 5.25m - 6.0m pohyb práh
+      still_threshold:
+        name: 5.25m - 6.0m klid práh
+    g8:
+      move_threshold:
+        name: 6.0m - 6.75m pohyb práh
+      still_threshold:
+        name: 6.0m - 6.75m klid práh
+
+select:
+  - platform: ld2410
+    distance_resolution:
+      name: "${name} rozlišení vzdálenosti"
+    baud_rate:
+      name: "${name} baud rate"
+    light_function:
+      name: "${name} funkce svetla"
+    out_pin_level:
+      name: "${name} level výstupního pinu"
+
+sensor:
+  - platform: ld2410
+    light:
+      name: "${name} světlo"
+    moving_distance:
+      name : "${name} vzádlenost pohybujícího se cíle"
+    still_distance:
+      name: "${name} vzádlenost stojícího cíle"
+    moving_energy:
+      name: "${name} pohybová energie"
+    still_energy:
+      name: "${name} klidová energie"
+    detection_distance:
+      name: "${name} detekční vzdálenost"
+    g0:
+      move_energy:
+        name: 0m - 0.75m energie pohyb
+      still_energy:
+        name: 0m - 0.75m energie klid
+    g1:
+      move_energy:
+        name: 1.5m - 2.25m energie pohyb
+      still_energy:
+        name: 1.5m - 2.25m energie klid
+    g2:
+      move_energy:
+        name: 1.5m - 2.25m energie pohyb
+      still_energy:
+        name: 1.5m - 2.25m energie klid
+    g3:
+      move_energy:
+        name: 2.25m - 3.0m energie pohyb
+      still_energy:
+        name: 2.25m - 3.0m energie klid
+    g4:
+      move_energy:
+        name: 3.0m - 3.75m energie pohyb
+      still_energy:
+        name: 3.0m - 3.75m energie klid
+    g5:
+      move_energy:
+        name: 3.75m - 4.5m energie pohyb
+      still_energy:
+        name: 3.75m - 4.5m energie klid
+    g6:
+      move_energy:
+        name: 4.5m - 5.25m energie pohyb
+      still_energy:
+        name: 4.5m - 5.25m energie klid
+    g7:
+      move_energy:
+        name: 5.25m - 6.0m energie pohyb
+      still_energy:
+        name: 5.25m - 6.0m energie klid
+    g8:
+      move_energy:
+        name: 6.0m - 6.75m energie pohyb
+      still_energy:
+        name: 6.0m - 6.75m energie klid
+
+  - platform: wifi_signal
+    name: "${name} signál"
+    update_interval: 10s
+  
+  - platform: uptime
+    name: "${name} doba běhu"
+
+binary_sensor:
+  - platform: ld2410
+    has_target:
+      name: "${name} přítomnost"
+    has_moving_target:
+      name: "${name} pohybující se cíl"
+    has_still_target:
+      name: "${name} stojící cíl"
+    out_pin_presence_status:
+      name: "${name} stav výstupního pinu"
+
+switch:
+  - platform: ld2410
+    engineering_mode:
+      name: "${name} konfigurační mód"
+    bluetooth:
+      name: "${name} kontrola bluetooth"
+
+button:
+  - platform: ld2410
+    factory_reset:
+      name: "${name} tovární nastavení"
+    restart:
+      name: "${name} restart"
+    query_params:
+      name: "${name} dotaz parametrů"
+
+text_sensor:
+  - platform: ld2410
+    version:
+      name: "${name} verze firmwaru"
+    mac_address:
+      name: "${name} MAC"
+
+  - platform: wifi_info
+    ip_address:
+      name: "${name} IP adresa"
+      icon: mdi:ip-network

@@ -1,0 +1,5 @@
+# Configuration
+substitutions:
+  name: esp-sonoff-dual-r3-8
+
+<<: !include templates/template-esp-sonoff-dual-r3.yaml
