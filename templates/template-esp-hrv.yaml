@@ -100,6 +100,18 @@ binary_sensor:
       number: 14
       inverted: true
 
+number:
+  - platform: template
+    name: "${name} disbalance ventilátoru"
+    id: fan_disbalance
+    min_value: -100
+    max_value: 100
+    step: 1.0
+    initial_value: 0.0
+    restore_value: true
+    mode: slider
+    optimistic: true
+
 output:
   - platform: esp32_dac
     pin: GPIO25
@@ -114,10 +126,13 @@ output:
     type: float
     write_action:
       - lambda: |-
-          id(dac1).set_level(state);
-          id(dac2).set_level(state);
-          ESP_LOGD("custom", "Nastavuji dac1 na hodnotu: %f", state);
-          ESP_LOGD("custom", "Nastavuji dac2 na hodnotu: %f", state);
+          float disbalance_value = id(fan_disbalance).state / 100.0;
+          float intake_level = state * (1.0 - disbalance_value);
+          float exhaust_level = state * (1.0 + disbalance_value);
+          id(dac1).set_level(intake_level);
+          id(dac2).set_level(exhaust_level);
+          ESP_LOGD("custom", "Nastavuji dac1 (přívod) na hodnotu: %f", intake_level);
+          ESP_LOGD("custom", "Nastavuji dac2 (odtah) na hodnotu: %f", exhaust_level);
 
 fan:
   - platform: speed
