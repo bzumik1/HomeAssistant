@@ -115,9 +115,7 @@ number:
       then:
         - lambda: |-
             if (id(hrv_fun).state) {
-              auto call = id(hrv_fun).turn_on();
-              call.set_speed(id(hrv_fun).speed);
-              call.perform();
+              id(hrv_fun).turn_on().set_speed(id(hrv_fun).speed).perform();
             }
 
 output:
