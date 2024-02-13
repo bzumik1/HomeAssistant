@@ -148,6 +148,7 @@ fan:
     output: dual_fan_output
     name: "${name} ventilátor "
     id: hrv_fun
+    restore_mode: RESTORE_DEFAULT_ON
     preset_modes:
       - "AUTO"
       - "MANUAL"
