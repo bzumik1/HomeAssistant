@@ -111,6 +111,14 @@ number:
     restore_value: true
     mode: slider
     optimistic: true
+    on_value:
+      then:
+        - lambda: |-
+            if (id(hrv_fun).state) {
+              auto call = id(hrv_fun).turn_on();
+              call.set_speed(id(hrv_fun).speed);
+              call.perform();
+            }
 
 output:
   - platform: esp32_dac
@@ -139,7 +147,7 @@ fan:
     speed_count: 100
     output: dual_fan_output
     name: "${name} ventilátor "
-    id: fan_in
+    id: hrv_fun
     preset_modes:
       - "AUTO"
       - "MANUAL"
