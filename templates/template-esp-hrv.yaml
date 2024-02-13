@@ -1,0 +1,133 @@
+<<: !include common.yaml
+
+# Basic Config
+esphome:
+  platform: ESP32
+  board: esp32dev
+  name: ${name}
+
+# Enable logging
+logger:
+
+# Relays are connected trough I2C
+i2c:
+  sda: 4
+  scl: 15
+  scan: True
+
+pcf8574:
+  - id: 'pcf8574_hub'
+    address: 0x24
+    pcf8575: False
+
+switch:
+  - platform: gpio
+    name: "${name} relé 1"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 0
+      mode:
+        output: true
+      inverted: false
+
+  - platform: gpio
+    name: "${name} relé 2"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 1
+      mode:
+        output: true
+      inverted: false
+
+  - platform: gpio
+    name: "${name} relé 3"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 2
+      mode:
+        output: true
+      inverted: false
+
+  - platform: gpio
+    name: "${name} relé 4"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 3
+      mode:
+        output: true
+      inverted: false
+
+  - platform: gpio
+    name: "${name} relé 5"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 4
+      mode:
+        output: true
+      inverted: false
+
+  - platform: gpio
+    name: "${name} relé 6"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 5
+      mode:
+        output: true
+      inverted: false
+
+binary_sensor:
+  - platform: gpio
+    name: "input1"
+    pin:
+      number: 36
+      inverted: true
+
+  - platform: gpio
+    name: "input2"
+    pin:
+      number: 39
+      inverted: true
+
+  - platform: gpio
+    name: "input3"
+    pin:
+      number: 27
+      inverted: true
+
+  - platform: gpio
+    name: "input4"
+    pin:
+      number: 14
+      inverted: true
+
+output:
+  - platform: esp32_dac
+    pin: GPIO25
+    id: dac1
+
+  - platform: esp32_dac
+    pin: GPIO26
+    id: dac2
+
+fan:
+  - platform: speed
+    speed_count: 100
+    output: dac1
+    name: "${name} ventilátor nasávání"
+    id: fan_in
+    internal: true
+    preset_modes:
+      - "AUTO"
+      - "MANUAL"
+      - "BOOST"
+
+  - platform: speed
+    speed_count: 100
+    output: dac2
+    name: "${name} ventilátor výfuk"
+    id: fan_out
+    internal: true
+    preset_modes:
+      - "AUTO"
+      - "MANUAL"
+      - "BOOST"

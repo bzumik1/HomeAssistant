@@ -1,0 +1,5 @@
+# Configuration
+substitutions:
+  name: esp-rekuperace
+
+<<: !include templates/template-esp-hrv.yaml
