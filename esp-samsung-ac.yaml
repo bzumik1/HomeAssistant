@@ -48,6 +48,18 @@ external_components:
     components: [samsung_ac]
 
 samsung_ac:
+  # debug_log_messages: true
+  # debug_log_messages_raw: true
+
+  capabilities: 
+    vertical_swing: true
+    presets:
+      sleep: true
+      quiet: true
+      fast: true
+      longreach: true
+      windfree: true
+
   devices:
     # BEDROOM
     - address: "20.00.00" # unit address
