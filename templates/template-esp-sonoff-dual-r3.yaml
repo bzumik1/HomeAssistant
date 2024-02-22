@@ -93,6 +93,7 @@ binary_sensor:
               then:
                 - switch.toggle: switch_relay1
               else:
+                - switch.turn_on: switch_relay1
                 - homeassistant.service:
                     service: script.turn_on
                     data:
@@ -143,6 +144,7 @@ binary_sensor:
               then:
                 - switch.toggle: switch_relay2
               else:
+                - switch.turn_on: switch_relay2
                 - homeassistant.service:
                     service: script.turn_on
                     data:
