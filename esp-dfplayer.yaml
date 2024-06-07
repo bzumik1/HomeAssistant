@@ -52,6 +52,7 @@ uart:
     baud_rate: 9600
     parity: NONE
 
+
 # MAKRA
 script:
   - id: play_with_lights
@@ -250,6 +251,15 @@ switch:
 
 
 button:
+   - platform: template
+    name: "Narozeniny"
+    icon: mdi:party-popper
+    id: birthday
+    on_press:
+      - lambda: |-
+          ESP_LOGI("Player", "Spouštím přání k narozeninám");
+          id(play_with_lights).execute(1, 1);
+
   - platform: template
     name: "Přehrát náhodnou hlášku"
     icon: mdi:message-question-outline
@@ -259,16 +269,6 @@ button:
           int random_track = random(1, 5);
           ESP_LOGI("Player", "Spouštím náhodnou hlášku: %d", random_track);
           id(play_with_lights).execute(2, random_track);
-
-
-  - platform: template
-    name: "Narozeniny"
-    icon: mdi:party-popper
-    id: birthday
-    on_press:
-      - lambda: |-
-          ESP_LOGI("Player", "Spouštím přání k narozeninám");
-          id(play_with_lights).execute(1, 1);
 
   - platform: template
     name: "06:00 - budíček"
