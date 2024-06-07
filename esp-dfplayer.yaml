@@ -110,12 +110,10 @@ binary_sensor:
             auto time = id(my_time).now();
             if (time.is_valid() && time.month == 8 && time.day_of_month == 24) {
               id(birthday).press();
+            } else if (id(motion_sensor_active).state) {
+              id(random_phrase).press();
             } else {
-              if (id(motion_sensor_active).state) {
-                id(random_phrase).press();
-              } else {
-                id(photo_light).press();
-              }
+              id(photo_light).press();
             }
       on_release:
         - logger.log: "Nikdo není přítomen"
