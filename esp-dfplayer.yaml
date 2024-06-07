@@ -45,18 +45,12 @@ uart:
     rx_pin: GPIO20
     baud_rate: 256000
     stop_bits: 1
-    # debug:
-    #     direction: BOTH
-    #     dummy_receiver: true
     
   - id: uart_1
     tx_pin: GPIO7
     rx_pin: GPIO6
     baud_rate: 9600
     parity: NONE
-    # debug:
-    #     direction: BOTH
-    #     dummy_receiver: true
 
 
 # LED DIODY
