@@ -105,6 +105,7 @@ ld2410:
 binary_sensor:
   - platform: status
     name: "Stav připojení"
+    icon: mdi:lan-connect
 
   - platform: template
     name: "Stav přehrávání"
@@ -125,7 +126,7 @@ binary_sensor:
         - logger.log: "Přítomnost detekována"
         - lambda: |-
             auto time = id(my_time).now();
-            if (time.is_valid() && time.month == 12 && time.day_of_month == 18) {
+            if (time.is_valid() && time.month == 8 && time.day_of_month == 24) {
               id(birthday).press();
             } else {
               if (id(motion_sensor_active).state) {
@@ -162,7 +163,80 @@ dfplayer:
 switch:
   - platform: template
     name: "Pohybový senzor aktivní"
+    icon: mdi:motion-sensor
     id: motion_sensor_active
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: CONFIG
+  
+  - platform: template
+    name: "06:00 - aktivní"
+    icon: mdi:fire-alert
+    id: time_6_00_active
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: CONFIG
+
+  - platform: template
+    name: "06:58 - aktivní"
+    icon: mdi:fire-alert
+    id: time_6_58_active
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: CONFIG
+
+  - platform: template
+    name: "07:00 - aktivní"
+    icon: mdi:fire-alert
+    id: time_7_00_active
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: CONFIG
+
+  - platform: template
+    name: "12:00 - aktivní"
+    icon: mdi:fire-alert
+    id: time_12_00_active
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: CONFIG
+
+  - platform: template
+    name: "12:30 - aktivní"
+    icon: mdi:fire-alert
+    id: time_12_30_active
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: CONFIG
+
+  - platform: template
+    name: "15:30 - aktivní"
+    icon: mdi:fire-alert
+    id: time_15_30_active
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: CONFIG
+
+  - platform: template
+    name: "17:00 - aktivní"
+    icon: mdi:fire-alert
+    id: time_17_00_active
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: CONFIG
+
+  - platform: template
+    name: "22:00 - aktivní"
+    icon: mdi:fire-alert
+    id: time_22_00_active
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: CONFIG
+
+  - platform: template
+    name: "23:00 - aktivní"
+    icon: mdi:fire-alert
+    id: time_23_00_active
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
     entity_category: CONFIG
@@ -610,6 +684,7 @@ sensor:
   - platform: ld2410
     detection_distance:
         name: Vzdálenost detekovaného objektu
+  
   - platform: bmp280
     address: 0x76
     update_interval: 60s
@@ -637,7 +712,7 @@ time:
         then:
           - lambda: |-
               auto time = id(my_time).now();
-              if (time.is_valid()) {
+              if (time.is_valid() && id(time_6_00_active).state && (id(ld2410_has_target).state || !id(motion_sensor_active).state)) {
                 ESP_LOGI("Time", "Je 6:00, provádím akci.");
                 id(time_trigger_6_00).press();
               }
@@ -648,7 +723,7 @@ time:
         then:
           - lambda: |-
               auto time = id(my_time).now();
-              if (time.is_valid()) {
+              if (time.is_valid() && id(time_6_58_active).state && (id(ld2410_has_target).state || !id(motion_sensor_active).state)) {
                 ESP_LOGI("Time", "Je 6:58, provádím akci.");
                 id(time_trigger_6_58).press();
               }
@@ -659,7 +734,7 @@ time:
         then:
           - lambda: |-
               auto time = id(my_time).now();
-              if (time.is_valid()) {
+              if (time.is_valid() && id(time_7_00_active).state && (id(ld2410_has_target).state || !id(motion_sensor_active).state)) {
                 ESP_LOGI("Time", "Je 7:00, provádím akci.");
                 id(time_trigger_7_00).press();
               }
@@ -670,7 +745,7 @@ time:
         then:
           - lambda: |-
               auto time = id(my_time).now();
-              if (time.is_valid()) {
+              if (time.is_valid() && id(time_12_00_active).state && (id(ld2410_has_target).state || !id(motion_sensor_active).state)) {
                 ESP_LOGI("Time", "Je 12:00, provádím akci.");
                 id(time_trigger_12_00).press();
               }
@@ -681,7 +756,7 @@ time:
         then:
           - lambda: |-
               auto time = id(my_time).now();
-              if (time.is_valid()) {
+              if (time.is_valid() && id(time_12_30_active).state && (id(ld2410_has_target).state || !id(motion_sensor_active).state)) {
                 ESP_LOGI("Time", "Je 12:30, provádím akci.");
                 id(time_trigger_12_30).press();
               }
@@ -692,7 +767,7 @@ time:
         then:
           - lambda: |-
               auto time = id(my_time).now();
-              if (time.is_valid()) {
+              if (time.is_valid() && id(time_15_30_active).state && (id(ld2410_has_target).state || !id(motion_sensor_active).state)) {
                 ESP_LOGI("Time", "Je 15:30, provádím akci.");
                 id(time_trigger_15_30).press();
               }
@@ -703,18 +778,18 @@ time:
         then:
           - lambda: |-
               auto time = id(my_time).now();
-              if (time.is_valid()) {
+              if (time.is_valid() && id(time_17_00_active).state && (id(ld2410_has_target).state || !id(motion_sensor_active).state)) {
                 ESP_LOGI("Time", "Je 17:00, provádím akci.");
                 id(time_trigger_17_00).press();
               }
 
       - seconds: 0
-        minutes: 00
-        hours: 22
+        minutes: 29
+        hours: 20
         then:
           - lambda: |-
               auto time = id(my_time).now();
-              if (time.is_valid()) {
+              if (time.is_valid() && id(time_22_00_active).state && (id(ld2410_has_target).state || !id(motion_sensor_active).state)) {
                 ESP_LOGI("Time", "Je 22:00, provádím akci.");
                 id(time_trigger_22_00).press();
               }
@@ -725,7 +800,7 @@ time:
         then:
           - lambda: |-
               auto time = id(my_time).now();
-              if (time.is_valid()) {
+              if (time.is_valid() && id(time_23_00_active).state && (id(ld2410_has_target).state || !id(motion_sensor_active).state)) {
                 ESP_LOGI("Time", "Je 23:00, provádím akci.");
                 id(time_trigger_23_00).press();
               }
