@@ -52,6 +52,33 @@ uart:
     baud_rate: 9600
     parity: NONE
 
+# MAKRA
+script:
+  - id: play_with_lights
+    parameters:
+      folder: int
+      track: int
+    then:
+      - lambda: |-
+          id(player).play_folder(folder, track);
+      - light.turn_on:
+          id: diods
+          brightness: !lambda |-
+            return id(brightness).state / 10.0;
+          effect: Hasičský maják
+      - delay: 1s
+      - wait_until:
+          not:
+            dfplayer.is_playing
+      - light.turn_off:
+          id: diods
+      - delay: 1s
+      - if:
+          condition:
+            binary_sensor.is_on: ld2410_has_target
+          then:
+            - button.press: photo_light
+
 
 # LED DIODY
 light:
@@ -228,28 +255,10 @@ button:
     icon: mdi:message-question-outline
     id: random_phrase
     on_press:
-      then:
-        - lambda: |-
-            int track = random(1, 5);
-            id(player).play_folder(2, track);
-            ESP_LOGD("Player", "Spouštím náhodnou hlášku: %d", track);
-        - light.turn_on:
-            id: diods
-            brightness: !lambda |-
-              return (id(brightness).state / 10.0);
-            effect: Hasičský maják
-        - delay: 1s
-        - wait_until:
-            not:
-              dfplayer.is_playing
-        - light.turn_off:  # Nejprve vypneme světlo
-            id: diods
-        - delay: 1s  # Krátké zpoždění, aby se zajistilo vypnutí
-        - if:
-            condition:
-              binary_sensor.is_on: ld2410_has_target
-            then:
-              - button.press: photo_light
+      - lambda: |-
+          int random_track = random(1, 5);
+          ESP_LOGI("Player", "Spouštím náhodnou hlášku: %d", random_track);
+          id(play_with_lights).execute(2, random_track);
 
 
   - platform: template
@@ -257,270 +266,90 @@ button:
     icon: mdi:party-popper
     id: birthday
     on_press:
-      then:
-        - lambda: |-
-            id(player).play_folder(1, 1);
-            ESP_LOGD("Player", "Spouštím přání k narozeninám");
-        - light.turn_on:
-            id: diods
-            brightness: !lambda |-
-              return (id(brightness).state / 10.0);
-            effect: Hasičský maják
-        - delay: 1s
-        - wait_until:
-            not:
-              dfplayer.is_playing
-        - light.turn_off:
-            id: diods
-        - delay: 1s
-        - if:
-            condition:
-              binary_sensor.is_on: ld2410_has_target
-            then:
-              - button.press: photo_light
+      - lambda: |-
+          ESP_LOGI("Player", "Spouštím přání k narozeninám");
+          id(play_with_lights).execute(1, 1);
 
   - platform: template
     name: "06:00 - budíček"
     icon: mdi:fire-alert
     id: time_trigger_6_00
     on_press:
-      then:
-        - lambda: |-
-            id(player).play_folder(3, 1);
-            ESP_LOGD("Player", "Spouštím budíček");
-        - light.turn_on:
-            id: diods
-            brightness: !lambda |-
-              return (id(brightness).state / 10.0);
-            effect: Hasičský maják
-        - delay: 1s
-        - wait_until:
-            not:
-              dfplayer.is_playing
-        - light.turn_off:
-            id: diods
-        - delay: 1s
-        - if:
-            condition:
-              binary_sensor.is_on: ld2410_has_target
-            then:
-              - button.press: photo_light
+      - lambda: |-
+          ESP_LOGI("Player", "Spouštím budíček");
+          id(play_with_lights).execute(3, 1);
 
   - platform: template
     name: "06:58 - příprava střídání"
     icon: mdi:fire-alert
     id: time_trigger_6_58
     on_press:
-      then:
-        - lambda: |-
-            id(player).play_folder(3, 2);
-            ESP_LOGD("Player", "Spouštím příprava střídání");
-        - light.turn_on:
-            id: diods
-            brightness: !lambda |-
-              return (id(brightness).state / 10.0);
-            effect: Hasičský maják
-        - delay: 1s
-        - wait_until:
-            not:
-              dfplayer.is_playing
-        - light.turn_off:
-            id: diods
-        - delay: 1s
-        - if:
-            condition:
-              binary_sensor.is_on: ld2410_has_target
-            then:
-              - button.press: photo_light
+      - lambda: |-
+          ESP_LOGI("Player", "Spouštím příprava střídání");
+          id(play_with_lights).execute(3, 2);
 
   - platform: template
     name: "07:00 - střídání směn"
     icon: mdi:fire-alert
     id: time_trigger_7_00
     on_press:
-      then:
-        - lambda: |-
-            id(player).play_folder(3, 3);
-            ESP_LOGD("Player", "Spouštím střídání směn");
-        - light.turn_on:
-            id: diods
-            brightness: !lambda |-
-              return (id(brightness).state / 10.0);
-            effect: Hasičský maják
-        - delay: 1s
-        - wait_until:
-            not:
-              dfplayer.is_playing
-        - light.turn_off:
-            id: diods
-        - delay: 1s
-        - if:
-            condition:
-              binary_sensor.is_on: ld2410_has_target
-            then:
-              - button.press: photo_light
+      - lambda: |-
+          ESP_LOGI("Player", "Spouštím střídání směn");
+          id(play_with_lights).execute(3, 3);
 
   - platform: template
     name: "12:00 - začátek polední přestávky"
     icon: mdi:fire-alert
     id: time_trigger_12_00
     on_press:
-      then:
-        - lambda: |-
-            id(player).play_folder(3, 4);
-            ESP_LOGD("Player", "Spouštím začátek polední přestávky");
-        - light.turn_on:
-            id: diods
-            brightness: !lambda |-
-              return (id(brightness).state / 10.0);
-            effect: Hasičský maják
-        - delay: 1s
-        - wait_until:
-            not:
-              dfplayer.is_playing
-        - light.turn_off:
-            id: diods
-        - delay: 1s
-        - if:
-            condition:
-              binary_sensor.is_on: ld2410_has_target
-            then:
-              - button.press: photo_light
+      - lambda: |-
+          ESP_LOGI("Player", "Spouštím začátek polední přestávky");
+          id(play_with_lights).execute(3, 4);
 
   - platform: template
     name: "12:30 - konec polední přestávky"
     icon: mdi:fire-alert
     id: time_trigger_12_30
     on_press:
-      then:
-        - lambda: |-
-            id(player).play_folder(3, 5);
-            ESP_LOGD("Player", "Spouštím konec polední přestávky");
-        - light.turn_on:
-            id: diods
-            brightness: !lambda |-
-              return (id(brightness).state / 10.0);
-            effect: Hasičský maják
-        - delay: 1s
-        - wait_until:
-            not:
-              dfplayer.is_playing
-        - light.turn_off:
-            id: diods
-        - delay: 1s
-        - if:
-            condition:
-              binary_sensor.is_on: ld2410_has_target
-            then:
-              - button.press: photo_light
+      - lambda: |-
+          ESP_LOGI("Player", "Spouštím konec polední přestávky");
+          id(play_with_lights).execute(3, 5);
 
   - platform: template
     name: "16:00 - odpolední pauza"
     icon: mdi:fire-alert
     id: time_trigger_16_00
     on_press:
-      then:
-        - lambda: |-
-            id(player).play_folder(3, 6);
-            ESP_LOGD("Player", "Spouštím odpolední pauza");
-        - light.turn_on:
-            id: diods
-            brightness: !lambda |-
-              return (id(brightness).state / 10.0);
-            effect: Hasičský maják
-        - delay: 1s
-        - wait_until:
-            not:
-              dfplayer.is_playing
-        - light.turn_off:
-            id: diods
-        - delay: 1s
-        - if:
-            condition:
-              binary_sensor.is_on: ld2410_has_target
-            then:
-              - button.press: photo_light
+      - lambda: |-
+          ESP_LOGI("Player", "Spouštím odpolední pauza");
+          id(play_with_lights).execute(3, 6);
 
   - platform: template
     name: "17:00 - večeře"
     icon: mdi:fire-alert
     id: time_trigger_17_00
     on_press:
-      then:
-        - lambda: |-
-            id(player).play_folder(3, 7);
-            ESP_LOGD("Player", "Spouštím večeře");
-        - light.turn_on:
-            id: diods
-            brightness: !lambda |-
-              return (id(brightness).state / 10.0);
-            effect: Hasičský maják
-        - delay: 1s
-        - wait_until:
-            not:
-              dfplayer.is_playing
-        - light.turn_off:
-            id: diods
-        - delay: 1s
-        - if:
-            condition:
-              binary_sensor.is_on: ld2410_has_target
-            then:
-              - button.press: photo_light
+      - lambda: |-
+          ESP_LOGI("Player", "Spouštím večeře");
+          id(play_with_lights).execute(3, 7);
 
   - platform: template
     name: "22:00 - noční pohotovost"
     icon: mdi:fire-alert
     id: time_trigger_22_00
     on_press:
-      then:
-        - lambda: |-
-            id(player).play_folder(3, 8);
-            ESP_LOGD("Player", "Spouštím noční pohotovost");
-        - light.turn_on:
-            id: diods
-            brightness: !lambda |-
-              return (id(brightness).state / 10.0);
-            effect: Hasičský maják
-        - delay: 1s
-        - wait_until:
-            not:
-              dfplayer.is_playing
-        - light.turn_off:
-            id: diods
-        - delay: 1s
-        - if:
-            condition:
-              binary_sensor.is_on: ld2410_has_target
-            then:
-              - button.press: photo_light
+      - lambda: |-
+          ESP_LOGI("Player", "Spouštím noční pohotovost");
+          id(play_with_lights).execute(3, 8);
 
   - platform: template
     name: "23:00 - druhý poločas"
     icon: mdi:fire-alert
     id: time_trigger_23_00
     on_press:
-      then:
-        - lambda: |-
-            id(player).play_folder(3, 9);
-            ESP_LOGD("Player", "Spouštím druhý poločas");
-        - light.turn_on:
-            id: diods
-            brightness: !lambda |-
-              return (id(brightness).state / 10.0);
-            effect: Hasičský maják
-        - delay: 1s
-        - wait_until:
-            not:
-              dfplayer.is_playing
-        - light.turn_off:
-            id: diods
-        - delay: 1s
-        - if:
-            condition:
-              binary_sensor.is_on: ld2410_has_target
-            then:
-              - button.press: photo_light
+      - lambda: |-
+          ESP_LOGI("Player", "Spouštím druhý poločas");
+          id(play_with_lights).execute(3, 9);
 
   - platform: template
     name: "Zastavit"
