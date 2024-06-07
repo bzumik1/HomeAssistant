@@ -133,8 +133,8 @@ binary_sensor:
       id: ld2410_has_target
       name: Přítomnost
       on_press:
-        - logger.log: "Přítomnost detekována"
         - lambda: |-
+            ESP_LOGD("Motion Sensor", "Přítomnost detekována");
             auto time = id(my_time).now();
             if (time.is_valid() && time.month == 8 && time.day_of_month == 24) {
               id(birthday).press();
@@ -251,7 +251,7 @@ switch:
 
 
 button:
-   - platform: template
+  - platform: template
     name: "Narozeniny"
     icon: mdi:party-popper
     id: birthday
@@ -356,30 +356,28 @@ button:
     icon: mdi:pause
     id: pause_button
     on_press:
-      then:
-        - dfplayer.stop
-        - light.turn_off:  # Nejprve vypneme světlo
-            id: diods
-        - delay: 1s  # Krátké zpoždění, aby se zajistilo vypnutí
-        - if:
-            condition:
-              binary_sensor.is_on: ld2410_has_target
-            then:
-              - button.press: photo_light
+      - dfplayer.stop
+      - light.turn_off:  # Nejprve vypneme světlo
+          id: diods
+      - delay: 1s  # Krátké zpoždění, aby se zajistilo vypnutí
+      - if:
+          condition:
+            binary_sensor.is_on: ld2410_has_target
+          then:
+            - button.press: photo_light
 
   - platform: template
     name: "Nasvítit fotku"
     icon: mdi:light-flood-down
     id: photo_light
     on_press:
-      then:
-        - light.turn_on:
-            id: diods
-            brightness: !lambda |-
-              return (id(brightness).state / 10.0);
-            red: 100%
-            green: 95%
-            blue: 70%
+      - light.turn_on:
+          id: diods
+          brightness: !lambda |-
+            return (id(brightness).state / 10.0);
+          red: 100%
+          green: 95%
+          blue: 70%
 
 number:
   - platform: ld2410
