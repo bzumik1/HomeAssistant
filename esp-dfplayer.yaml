@@ -71,7 +71,7 @@ light:
     restore_mode: RESTORE_DEFAULT_OFF
     effects:
       - strobe:
-          name: Police Strobe
+          name: Hasičský maják
           colors:
             - state: True
               red: 100%
@@ -83,18 +83,6 @@ light:
               green: 0%
               blue: 100%
               duration: 200ms
-      - addressable_color_wipe:
-          name: Color Wipe Effect With Custom Values
-          colors:
-            - red: 100%
-              green: 0%
-              blue: 0%
-              num_leds: 5
-            - red: 0%
-              green: 0%
-              blue: 100%
-              num_leds: 5
-          add_led_interval: 50ms
 
 
 # POHYBOVÝ SENZOR
@@ -257,7 +245,7 @@ button:
             id: diods
             brightness: !lambda |-
               return (id(brightness).state / 10.0);
-            effect: Police Strobe
+            effect: Hasičský maják
         - delay: 1s
         - wait_until:
             not:
@@ -285,7 +273,7 @@ button:
             id: diods
             brightness: !lambda |-
               return (id(brightness).state / 10.0);
-            effect: Police Strobe
+            effect: Hasičský maják
         - delay: 1s
         - wait_until:
             not:
@@ -312,7 +300,7 @@ button:
             id: diods
             brightness: !lambda |-
               return (id(brightness).state / 10.0);
-            effect: Police Strobe
+            effect: Hasičský maják
         - delay: 1s
         - wait_until:
             not:
@@ -339,7 +327,7 @@ button:
             id: diods
             brightness: !lambda |-
               return (id(brightness).state / 10.0);
-            effect: Police Strobe
+            effect: Hasičský maják
         - delay: 1s
         - wait_until:
             not:
@@ -366,7 +354,7 @@ button:
             id: diods
             brightness: !lambda |-
               return (id(brightness).state / 10.0);
-            effect: Police Strobe
+            effect: Hasičský maják
         - delay: 1s
         - wait_until:
             not:
@@ -393,7 +381,7 @@ button:
             id: diods
             brightness: !lambda |-
               return (id(brightness).state / 10.0);
-            effect: Police Strobe
+            effect: Hasičský maják
         - delay: 1s
         - wait_until:
             not:
@@ -420,7 +408,7 @@ button:
             id: diods
             brightness: !lambda |-
               return (id(brightness).state / 10.0);
-            effect: Police Strobe
+            effect: Hasičský maják
         - delay: 1s
         - wait_until:
             not:
@@ -447,7 +435,7 @@ button:
             id: diods
             brightness: !lambda |-
               return (id(brightness).state / 10.0);
-            effect: Police Strobe
+            effect: Hasičský maják
         - delay: 1s
         - wait_until:
             not:
@@ -474,7 +462,7 @@ button:
             id: diods
             brightness: !lambda |-
               return (id(brightness).state / 10.0);
-            effect: Police Strobe
+            effect: Hasičský maják
         - delay: 1s
         - wait_until:
             not:
@@ -501,7 +489,7 @@ button:
             id: diods
             brightness: !lambda |-
               return (id(brightness).state / 10.0);
-            effect: Police Strobe
+            effect: Hasičský maják
         - delay: 1s
         - wait_until:
             not:
@@ -528,7 +516,7 @@ button:
             id: diods
             brightness: !lambda |-
               return (id(brightness).state / 10.0);
-            effect: Police Strobe
+            effect: Hasičský maják
         - delay: 1s
         - wait_until:
             not:
