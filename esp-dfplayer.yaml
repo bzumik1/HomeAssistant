@@ -304,289 +304,244 @@ button:
     name: "06:00 - budíček"
     icon: mdi:fire-alert
     id: time_trigger_6_00
-    #internal: true
     on_press:
       then:
+        - lambda: |-
+            id(player).play_folder(3, 1);
+            ESP_LOGD("Player", "Spouštím budíček");
+        - light.turn_on:
+            id: diods
+            brightness: !lambda |-
+              return (id(brightness).state / 10.0);
+            effect: Police Strobe
+        - delay: 1s
+        - wait_until:
+            not:
+              dfplayer.is_playing
+        - light.turn_off:
+            id: diods
+        - delay: 1s
         - if:
             condition:
               binary_sensor.is_on: ld2410_has_target
             then:
-              - lambda: |-
-                  id(player).play_folder(3, 1);
-                  ESP_LOGD("Player", "Spouštím budíček");
-              - light.turn_on:
-                  id: diods
-                  brightness: !lambda |-
-                    return (id(brightness).state / 10.0);
-                  effect: Police Strobe
-              - delay: 1s
-              - wait_until:
-                  not:
-                    dfplayer.is_playing
-              - light.turn_off:
-                  id: diods
-              - delay: 1s
-              - if:
-                  condition:
-                    binary_sensor.is_on: ld2410_has_target
-                  then:
-                    - button.press: photo_light
+              - button.press: photo_light
 
   - platform: template
     name: "06:58 - příprava střídání"
     icon: mdi:fire-alert
     id: time_trigger_6_58
-    #internal: true
     on_press:
       then:
+        - lambda: |-
+            id(player).play_folder(3, 2);
+            ESP_LOGD("Player", "Spouštím příprava střídání");
+        - light.turn_on:
+            id: diods
+            brightness: !lambda |-
+              return (id(brightness).state / 10.0);
+            effect: Police Strobe
+        - delay: 1s
+        - wait_until:
+            not:
+              dfplayer.is_playing
+        - light.turn_off:
+            id: diods
+        - delay: 1s
         - if:
             condition:
               binary_sensor.is_on: ld2410_has_target
             then:
-              - lambda: |-
-                  id(player).play_folder(3, 2);
-                  ESP_LOGD("Player", "Spouštím příprava střídání");
-              - light.turn_on:
-                  id: diods
-                  brightness: !lambda |-
-                    return (id(brightness).state / 10.0);
-                  effect: Police Strobe
-              - delay: 1s
-              - wait_until:
-                  not:
-                    dfplayer.is_playing
-              - light.turn_off:
-                  id: diods
-              - delay: 1s
-              - if:
-                  condition:
-                    binary_sensor.is_on: ld2410_has_target
-                  then:
-                    - button.press: photo_light
+              - button.press: photo_light
 
   - platform: template
     name: "07:00 - střídání směn"
     icon: mdi:fire-alert
     id: time_trigger_7_00
-    #internal: true
     on_press:
       then:
+        - lambda: |-
+            id(player).play_folder(3, 3);
+            ESP_LOGD("Player", "Spouštím střídání směn");
+        - light.turn_on:
+            id: diods
+            brightness: !lambda |-
+              return (id(brightness).state / 10.0);
+            effect: Police Strobe
+        - delay: 1s
+        - wait_until:
+            not:
+              dfplayer.is_playing
+        - light.turn_off:
+            id: diods
+        - delay: 1s
         - if:
             condition:
               binary_sensor.is_on: ld2410_has_target
             then:
-              - lambda: |-
-                  id(player).play_folder(3, 3);
-                  ESP_LOGD("Player", "Spouštím střídání směn");
-              - light.turn_on:
-                  id: diods
-                  brightness: !lambda |-
-                    return (id(brightness).state / 10.0);
-                  effect: Police Strobe
-              - delay: 1s
-              - wait_until:
-                  not:
-                    dfplayer.is_playing
-              - light.turn_off:
-                  id: diods
-              - delay: 1s
-              - if:
-                  condition:
-                    binary_sensor.is_on: ld2410_has_target
-                  then:
-                    - button.press: photo_light
+              - button.press: photo_light
 
   - platform: template
     name: "12:00 - začátek polední přestávky"
     icon: mdi:fire-alert
     id: time_trigger_12_00
-    #internal: true
     on_press:
       then:
+        - lambda: |-
+            id(player).play_folder(3, 4);
+            ESP_LOGD("Player", "Spouštím začátek polední přestávky");
+        - light.turn_on:
+            id: diods
+            brightness: !lambda |-
+              return (id(brightness).state / 10.0);
+            effect: Police Strobe
+        - delay: 1s
+        - wait_until:
+            not:
+              dfplayer.is_playing
+        - light.turn_off:
+            id: diods
+        - delay: 1s
         - if:
             condition:
               binary_sensor.is_on: ld2410_has_target
             then:
-              - lambda: |-
-                  id(player).play_folder(3, 4);
-                  ESP_LOGD("Player", "Spouštím začátek polední přestávky");
-              - light.turn_on:
-                  id: diods
-                  brightness: !lambda |-
-                    return (id(brightness).state / 10.0);
-                  effect: Police Strobe
-              - delay: 1s
-              - wait_until:
-                  not:
-                    dfplayer.is_playing
-              - light.turn_off:
-                  id: diods
-              - delay: 1s
-              - if:
-                  condition:
-                    binary_sensor.is_on: ld2410_has_target
-                  then:
-                    - button.press: photo_light
+              - button.press: photo_light
 
   - platform: template
     name: "12:30 - konec polední přestávky"
     icon: mdi:fire-alert
     id: time_trigger_12_30
-    #internal: true
     on_press:
       then:
+        - lambda: |-
+            id(player).play_folder(3, 5);
+            ESP_LOGD("Player", "Spouštím konec polední přestávky");
+        - light.turn_on:
+            id: diods
+            brightness: !lambda |-
+              return (id(brightness).state / 10.0);
+            effect: Police Strobe
+        - delay: 1s
+        - wait_until:
+            not:
+              dfplayer.is_playing
+        - light.turn_off:
+            id: diods
+        - delay: 1s
         - if:
             condition:
               binary_sensor.is_on: ld2410_has_target
             then:
-              - lambda: |-
-                  id(player).play_folder(3, 5);
-                  ESP_LOGD("Player", "Spouštím konec polední přestávky");
-              - light.turn_on:
-                  id: diods
-                  brightness: !lambda |-
-                    return (id(brightness).state / 10.0);
-                  effect: Police Strobe
-              - delay: 1s
-              - wait_until:
-                  not:
-                    dfplayer.is_playing
-              - light.turn_off:
-                  id: diods
-              - delay: 1s
-              - if:
-                  condition:
-                    binary_sensor.is_on: ld2410_has_target
-                  then:
-                    - button.press: photo_light
+              - button.press: photo_light
 
   - platform: template
     name: "15:30 - odpolední pauza"
     icon: mdi:fire-alert
     id: time_trigger_15_30
-    #internal: true
     on_press:
       then:
+        - lambda: |-
+            id(player).play_folder(3, 6);
+            ESP_LOGD("Player", "Spouštím odpolední pauza");
+        - light.turn_on:
+            id: diods
+            brightness: !lambda |-
+              return (id(brightness).state / 10.0);
+            effect: Police Strobe
+        - delay: 1s
+        - wait_until:
+            not:
+              dfplayer.is_playing
+        - light.turn_off:
+            id: diods
+        - delay: 1s
         - if:
             condition:
               binary_sensor.is_on: ld2410_has_target
             then:
-              - lambda: |-
-                  id(player).play_folder(3, 6);
-                  ESP_LOGD("Player", "Spouštím odpolední pauza");
-              - light.turn_on:
-                  id: diods
-                  brightness: !lambda |-
-                    return (id(brightness).state / 10.0);
-                  effect: Police Strobe
-              - delay: 1s
-              - wait_until:
-                  not:
-                    dfplayer.is_playing
-              - light.turn_off:
-                  id: diods
-              - delay: 1s
-              - if:
-                  condition:
-                    binary_sensor.is_on: ld2410_has_target
-                  then:
-                    - button.press: photo_light
+              - button.press: photo_light
 
   - platform: template
     name: "17:00 - večeře"
     icon: mdi:fire-alert
     id: time_trigger_17_00
-    #internal: true
     on_press:
       then:
+        - lambda: |-
+            id(player).play_folder(3, 7);
+            ESP_LOGD("Player", "Spouštím večeře");
+        - light.turn_on:
+            id: diods
+            brightness: !lambda |-
+              return (id(brightness).state / 10.0);
+            effect: Police Strobe
+        - delay: 1s
+        - wait_until:
+            not:
+              dfplayer.is_playing
+        - light.turn_off:
+            id: diods
+        - delay: 1s
         - if:
             condition:
               binary_sensor.is_on: ld2410_has_target
             then:
-              - lambda: |-
-                  id(player).play_folder(3, 7);
-                  ESP_LOGD("Player", "Spouštím večeře");
-              - light.turn_on:
-                  id: diods
-                  brightness: !lambda |-
-                    return (id(brightness).state / 10.0);
-                  effect: Police Strobe
-              - delay: 1s
-              - wait_until:
-                  not:
-                    dfplayer.is_playing
-              - light.turn_off:
-                  id: diods
-              - delay: 1s
-              - if:
-                  condition:
-                    binary_sensor.is_on: ld2410_has_target
-                  then:
-                    - button.press: photo_light
+              - button.press: photo_light
 
   - platform: template
     name: "22:00 - noční pohotovost"
     icon: mdi:fire-alert
     id: time_trigger_22_00
-    #internal: true
     on_press:
       then:
+        - lambda: |-
+            id(player).play_folder(3, 8);
+            ESP_LOGD("Player", "Spouštím noční pohotovost");
+        - light.turn_on:
+            id: diods
+            brightness: !lambda |-
+              return (id(brightness).state / 10.0);
+            effect: Police Strobe
+        - delay: 1s
+        - wait_until:
+            not:
+              dfplayer.is_playing
+        - light.turn_off:
+            id: diods
+        - delay: 1s
         - if:
             condition:
               binary_sensor.is_on: ld2410_has_target
             then:
-              - lambda: |-
-                  id(player).play_folder(3, 8);
-                  ESP_LOGD("Player", "Spouštím noční pohotovost");
-              - light.turn_on:
-                  id: diods
-                  brightness: !lambda |-
-                    return (id(brightness).state / 10.0);
-                  effect: Police Strobe
-              - delay: 1s
-              - wait_until:
-                  not:
-                    dfplayer.is_playing
-              - light.turn_off:
-                  id: diods
-              - delay: 1s
-              - if:
-                  condition:
-                    binary_sensor.is_on: ld2410_has_target
-                  then:
-                    - button.press: photo_light
+              - button.press: photo_light
 
   - platform: template
     name: "23:00 - druhý poločas"
     icon: mdi:fire-alert
     id: time_trigger_23_00
-    #internal: true
     on_press:
       then:
+        - lambda: |-
+            id(player).play_folder(3, 9);
+            ESP_LOGD("Player", "Spouštím druhý poločas");
+        - light.turn_on:
+            id: diods
+            brightness: !lambda |-
+              return (id(brightness).state / 10.0);
+            effect: Police Strobe
+        - delay: 1s
+        - wait_until:
+            not:
+              dfplayer.is_playing
+        - light.turn_off:
+            id: diods
+        - delay: 1s
         - if:
             condition:
               binary_sensor.is_on: ld2410_has_target
             then:
-              - lambda: |-
-                  id(player).play_folder(3, 9);
-                  ESP_LOGD("Player", "Spouštím druhý poločas");
-              - light.turn_on:
-                  id: diods
-                  brightness: !lambda |-
-                    return (id(brightness).state / 10.0);
-                  effect: Police Strobe
-              - delay: 1s
-              - wait_until:
-                  not:
-                    dfplayer.is_playing
-              - light.turn_off:
-                  id: diods
-              - delay: 1s
-              - if:
-                  condition:
-                    binary_sensor.is_on: ld2410_has_target
-                  then:
-                    - button.press: photo_light
+              - button.press: photo_light
 
   - platform: template
     name: "Zastavit"
