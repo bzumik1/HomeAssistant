@@ -404,9 +404,9 @@ number:
     step: 1
     set_action:
       - lambda: |-
-            int volume = 3*x;
-            id(player).set_volume(volume);
-            ESP_LOGD("Volume", "Nastavuji hlasitost na: %d", volume);
+          int volume = 3*x;
+          id(player).set_volume(volume);
+          ESP_LOGD("Volume", "Nastavuji hlasitost na: %d", volume);
 
   - platform: template
     name: "Jas"
