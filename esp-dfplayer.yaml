@@ -210,9 +210,9 @@ switch:
     entity_category: CONFIG
 
   - platform: template
-    name: "15:30 - aktivní"
+    name: "16:00 - aktivní"
     icon: mdi:fire-alert
-    id: time_15_30_active
+    id: time_16_00_active
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
     entity_category: CONFIG
@@ -276,7 +276,6 @@ button:
     name: "Narozeniny"
     icon: mdi:party-popper
     id: birthday
-    #internal: true
     on_press:
       then:
         - lambda: |-
@@ -436,9 +435,9 @@ button:
               - button.press: photo_light
 
   - platform: template
-    name: "15:30 - odpolední pauza"
+    name: "16:00 - odpolední pauza"
     icon: mdi:fire-alert
-    id: time_trigger_15_30
+    id: time_trigger_16_00
     on_press:
       then:
         - lambda: |-
@@ -717,14 +716,14 @@ time:
               }
 
       - seconds: 0
-        minutes: 30
-        hours: 15
+        minutes: 00
+        hours: 16
         then:
           - lambda: |-
               auto time = id(my_time).now();
-              if (time.is_valid() && id(time_15_30_active).state && (id(ld2410_has_target).state || !id(motion_sensor_active).state)) {
-                ESP_LOGI("Time", "Je 15:30, provádím akci.");
-                id(time_trigger_15_30).press();
+              if (time.is_valid() && id(time_16_00_active).state && (id(ld2410_has_target).state || !id(motion_sensor_active).state)) {
+                ESP_LOGI("Time", "Je 16:00, provádím akci.");
+                id(time_trigger_16_00).press();
               }
 
       - seconds: 0
@@ -739,8 +738,8 @@ time:
               }
 
       - seconds: 0
-        minutes: 29
-        hours: 20
+        minutes: 00
+        hours: 22
         then:
           - lambda: |-
               auto time = id(my_time).now();
