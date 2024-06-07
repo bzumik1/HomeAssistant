@@ -187,26 +187,6 @@ button:
                   red: 100%
                   green: 95%
                   blue: 70%
-
-  - platform: template
-    name: "Načíst SD kartu"
-    icon: mdi:sd
-    on_press: 
-      then:
-        - dfplayer.set_device: TF_CARD
-
-  - platform: template
-    name: "Restartovat"
-    icon: mdi:restart
-    on_press: 
-      then:
-        - dfplayer.reset
-
-  - platform: template
-    name: "Nastartovat"
-    on_press: 
-      then:
-        - dfplayer.start
   
 
 number:
