@@ -633,11 +633,14 @@ sensor:
     temperature:
       name: "Teplota v místnosti"
       oversampling: 16x
+      icon: mdi:thermometer
     pressure:
       name: "Tlak v místnosti"
+      icon: mdi:gauge
   
   - platform: wifi_signal
     name: "WiFi signál"
+    icon: mdi:wifi
     update_interval: 10s
   
   - platform: uptime
