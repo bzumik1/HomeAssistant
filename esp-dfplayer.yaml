@@ -112,7 +112,7 @@ binary_sensor:
               id(birthday).press();
             } else {
               if (id(motion_sensor_active).state) {
-                id(play_button).press();
+                id(random_phrase).press();
               } else {
                 id(photo_light).press();
               }
@@ -226,9 +226,9 @@ switch:
 
 button:
   - platform: template
-    name: "Spustit"
-    icon: mdi:play
-    id: play_button
+    name: "Přehrát náhodnou hlášku"
+    icon: mdi:message-question-outline
+    id: random_phrase
     on_press:
       then:
         - lambda: |-
