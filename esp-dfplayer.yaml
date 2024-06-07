@@ -26,6 +26,8 @@ logger:
 
 web_server:
   port: 80
+  version: 3
+  log: false
 
 ota:
 
@@ -66,6 +68,7 @@ light:
     type: GRB
     name: "Diody"
     id: diods
+    restore_mode: RESTORE_DEFAULT_OFF
     effects:
       - strobe:
           name: Police Strobe
@@ -100,6 +103,20 @@ ld2410:
 
 
 binary_sensor:
+  - platform: status
+    name: "Stav připojení"
+
+  - platform: template
+    name: "Stav přehrávání"
+    id: dfplayer_playing
+    icon: mdi:play-pause
+    lambda: |-
+      if (id(player).is_playing()) {
+        return true;
+      } else {
+        return false;
+      }
+
   - platform: ld2410
     has_target:
       id: ld2410_has_target
@@ -108,14 +125,14 @@ binary_sensor:
         - logger.log: "Přítomnost detekována"
         - lambda: |-
             auto time = id(my_time).now();
-            if (id(my_time).now().is_valid() && time.month == 12 && time.day_of_month == 18) {
-              ESP_LOGI("Birthday", "Všechno nejlepší!");
-              auto call = id(diods).turn_on();
-              call.set_brightness(1.0);
-              call.set_rgb(1.0, 0.95, 0.70);
-              call.perform();
+            if (time.is_valid() && time.month == 12 && time.day_of_month == 18) {
+              id(birthday).press();
             } else {
-              id(play_button).press();
+              if (id(motion_sensor_active).state) {
+                id(play_button).press();
+              } else {
+                id(photo_light).press();
+              }
             }
       on_release:
         - logger.log: "Nikdo není přítomen"
@@ -139,7 +156,16 @@ dfplayer:
   id: player
   on_finished_playback:
     then:
-      logger.log: 'Somebody press play!'
+      logger.log: 'Skončilo přehrávání'
+
+
+switch:
+  - platform: template
+    name: "Pohybový senzor aktivní"
+    id: motion_sensor_active
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: CONFIG
 
 
 button:
@@ -150,30 +176,18 @@ button:
     on_press:
       then:
         - lambda: |-
-            int track = random(1, 4);
-            id(player).play_mp3(track);
-            ESP_LOGD("Player", "Spouštím skladbu: %d", track);
+            int track = random(1, 5);
+            id(player).play_folder(2, track);
+            ESP_LOGD("Player", "Spouštím náhodnou hlášku: %d", track);
         - light.turn_on:
             id: diods
+            brightness: !lambda |-
+              return (id(brightness).state / 10.0);
             effect: Police Strobe
-        - delay: 15s
-        - light.turn_off:  # Nejprve vypneme světlo
-            id: diods
-        - delay: 1s  # Krátké zpoždění, aby se zajistilo vypnutí
-        - light.turn_on:  # Pak ho znovu zapneme s novou barvou
-            id: diods
-            brightness: 100%
-            red: 100%
-            green: 95%
-            blue: 70%
-
-  - platform: template
-    name: "Zastavit"
-    icon: mdi:pause
-    id: pause_button
-    on_press:
-      then:
-        - dfplayer.pause
+        - delay: 1s
+        - wait_until:
+            not:
+              dfplayer.is_playing
         - light.turn_off:  # Nejprve vypneme světlo
             id: diods
         - delay: 1s  # Krátké zpoždění, aby se zajistilo vypnutí
@@ -181,13 +195,354 @@ button:
             condition:
               binary_sensor.is_on: ld2410_has_target
             then:
-              - light.turn_on:  # Pak ho znovu zapneme s novou barvou, pokud je někdo přítomen
+              - button.press: photo_light
+
+
+  - platform: template
+    name: "Narozeniny"
+    icon: mdi:party-popper
+    id: birthday
+    #internal: true
+    on_press:
+      then:
+        - lambda: |-
+            id(player).play_folder(1, 1);
+            ESP_LOGD("Player", "Spouštím přání k narozeninám");
+        - light.turn_on:
+            id: diods
+            brightness: !lambda |-
+              return (id(brightness).state / 10.0);
+            effect: Police Strobe
+        - delay: 1s
+        - wait_until:
+            not:
+              dfplayer.is_playing
+        - light.turn_off:
+            id: diods
+        - delay: 1s
+        - if:
+            condition:
+              binary_sensor.is_on: ld2410_has_target
+            then:
+              - button.press: photo_light
+
+  - platform: template
+    name: "06:00 - budíček"
+    icon: mdi:fire-alert
+    id: time_trigger_6_00
+    #internal: true
+    on_press:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_on: ld2410_has_target
+            then:
+              - lambda: |-
+                  id(player).play_folder(3, 1);
+                  ESP_LOGD("Player", "Spouštím budíček");
+              - light.turn_on:
                   id: diods
-                  brightness: 100%
-                  red: 100%
-                  green: 95%
-                  blue: 70%
-  
+                  brightness: !lambda |-
+                    return (id(brightness).state / 10.0);
+                  effect: Police Strobe
+              - delay: 1s
+              - wait_until:
+                  not:
+                    dfplayer.is_playing
+              - light.turn_off:
+                  id: diods
+              - delay: 1s
+              - if:
+                  condition:
+                    binary_sensor.is_on: ld2410_has_target
+                  then:
+                    - button.press: photo_light
+
+  - platform: template
+    name: "06:58 - příprava střídání"
+    icon: mdi:fire-alert
+    id: time_trigger_6_58
+    #internal: true
+    on_press:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_on: ld2410_has_target
+            then:
+              - lambda: |-
+                  id(player).play_folder(3, 2);
+                  ESP_LOGD("Player", "Spouštím příprava střídání");
+              - light.turn_on:
+                  id: diods
+                  brightness: !lambda |-
+                    return (id(brightness).state / 10.0);
+                  effect: Police Strobe
+              - delay: 1s
+              - wait_until:
+                  not:
+                    dfplayer.is_playing
+              - light.turn_off:
+                  id: diods
+              - delay: 1s
+              - if:
+                  condition:
+                    binary_sensor.is_on: ld2410_has_target
+                  then:
+                    - button.press: photo_light
+
+  - platform: template
+    name: "07:00 - střídání směn"
+    icon: mdi:fire-alert
+    id: time_trigger_7_00
+    #internal: true
+    on_press:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_on: ld2410_has_target
+            then:
+              - lambda: |-
+                  id(player).play_folder(3, 3);
+                  ESP_LOGD("Player", "Spouštím střídání směn");
+              - light.turn_on:
+                  id: diods
+                  brightness: !lambda |-
+                    return (id(brightness).state / 10.0);
+                  effect: Police Strobe
+              - delay: 1s
+              - wait_until:
+                  not:
+                    dfplayer.is_playing
+              - light.turn_off:
+                  id: diods
+              - delay: 1s
+              - if:
+                  condition:
+                    binary_sensor.is_on: ld2410_has_target
+                  then:
+                    - button.press: photo_light
+
+  - platform: template
+    name: "12:00 - začátek polední přestávky"
+    icon: mdi:fire-alert
+    id: time_trigger_12_00
+    #internal: true
+    on_press:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_on: ld2410_has_target
+            then:
+              - lambda: |-
+                  id(player).play_folder(3, 4);
+                  ESP_LOGD("Player", "Spouštím začátek polední přestávky");
+              - light.turn_on:
+                  id: diods
+                  brightness: !lambda |-
+                    return (id(brightness).state / 10.0);
+                  effect: Police Strobe
+              - delay: 1s
+              - wait_until:
+                  not:
+                    dfplayer.is_playing
+              - light.turn_off:
+                  id: diods
+              - delay: 1s
+              - if:
+                  condition:
+                    binary_sensor.is_on: ld2410_has_target
+                  then:
+                    - button.press: photo_light
+
+  - platform: template
+    name: "12:30 - konec polední přestávky"
+    icon: mdi:fire-alert
+    id: time_trigger_12_30
+    #internal: true
+    on_press:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_on: ld2410_has_target
+            then:
+              - lambda: |-
+                  id(player).play_folder(3, 5);
+                  ESP_LOGD("Player", "Spouštím konec polední přestávky");
+              - light.turn_on:
+                  id: diods
+                  brightness: !lambda |-
+                    return (id(brightness).state / 10.0);
+                  effect: Police Strobe
+              - delay: 1s
+              - wait_until:
+                  not:
+                    dfplayer.is_playing
+              - light.turn_off:
+                  id: diods
+              - delay: 1s
+              - if:
+                  condition:
+                    binary_sensor.is_on: ld2410_has_target
+                  then:
+                    - button.press: photo_light
+
+  - platform: template
+    name: "15:30 - odpolední pauza"
+    icon: mdi:fire-alert
+    id: time_trigger_15_30
+    #internal: true
+    on_press:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_on: ld2410_has_target
+            then:
+              - lambda: |-
+                  id(player).play_folder(3, 6);
+                  ESP_LOGD("Player", "Spouštím odpolední pauza");
+              - light.turn_on:
+                  id: diods
+                  brightness: !lambda |-
+                    return (id(brightness).state / 10.0);
+                  effect: Police Strobe
+              - delay: 1s
+              - wait_until:
+                  not:
+                    dfplayer.is_playing
+              - light.turn_off:
+                  id: diods
+              - delay: 1s
+              - if:
+                  condition:
+                    binary_sensor.is_on: ld2410_has_target
+                  then:
+                    - button.press: photo_light
+
+  - platform: template
+    name: "17:00 - večeře"
+    icon: mdi:fire-alert
+    id: time_trigger_17_00
+    #internal: true
+    on_press:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_on: ld2410_has_target
+            then:
+              - lambda: |-
+                  id(player).play_folder(3, 7);
+                  ESP_LOGD("Player", "Spouštím večeře");
+              - light.turn_on:
+                  id: diods
+                  brightness: !lambda |-
+                    return (id(brightness).state / 10.0);
+                  effect: Police Strobe
+              - delay: 1s
+              - wait_until:
+                  not:
+                    dfplayer.is_playing
+              - light.turn_off:
+                  id: diods
+              - delay: 1s
+              - if:
+                  condition:
+                    binary_sensor.is_on: ld2410_has_target
+                  then:
+                    - button.press: photo_light
+
+  - platform: template
+    name: "22:00 - noční pohotovost"
+    icon: mdi:fire-alert
+    id: time_trigger_22_00
+    #internal: true
+    on_press:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_on: ld2410_has_target
+            then:
+              - lambda: |-
+                  id(player).play_folder(3, 8);
+                  ESP_LOGD("Player", "Spouštím noční pohotovost");
+              - light.turn_on:
+                  id: diods
+                  brightness: !lambda |-
+                    return (id(brightness).state / 10.0);
+                  effect: Police Strobe
+              - delay: 1s
+              - wait_until:
+                  not:
+                    dfplayer.is_playing
+              - light.turn_off:
+                  id: diods
+              - delay: 1s
+              - if:
+                  condition:
+                    binary_sensor.is_on: ld2410_has_target
+                  then:
+                    - button.press: photo_light
+
+  - platform: template
+    name: "23:00 - druhý poločas"
+    icon: mdi:fire-alert
+    id: time_trigger_23_00
+    #internal: true
+    on_press:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_on: ld2410_has_target
+            then:
+              - lambda: |-
+                  id(player).play_folder(3, 9);
+                  ESP_LOGD("Player", "Spouštím druhý poločas");
+              - light.turn_on:
+                  id: diods
+                  brightness: !lambda |-
+                    return (id(brightness).state / 10.0);
+                  effect: Police Strobe
+              - delay: 1s
+              - wait_until:
+                  not:
+                    dfplayer.is_playing
+              - light.turn_off:
+                  id: diods
+              - delay: 1s
+              - if:
+                  condition:
+                    binary_sensor.is_on: ld2410_has_target
+                  then:
+                    - button.press: photo_light
+
+  - platform: template
+    name: "Zastavit"
+    icon: mdi:pause
+    id: pause_button
+    on_press:
+      then:
+        - dfplayer.stop
+        - light.turn_off:  # Nejprve vypneme světlo
+            id: diods
+        - delay: 1s  # Krátké zpoždění, aby se zajistilo vypnutí
+        - if:
+            condition:
+              binary_sensor.is_on: ld2410_has_target
+            then:
+              - button.press: photo_light
+
+  - platform: template
+    name: "Nasvítit fotku"
+    icon: mdi:light-flood-down
+    id: photo_light
+    on_press:
+      then:
+        - light.turn_on:
+            id: diods
+            brightness: !lambda |-
+              return (id(brightness).state / 10.0);
+            red: 100%
+            green: 95%
+            blue: 70%
 
 number:
   - platform: ld2410
@@ -199,10 +554,12 @@ number:
       name: Maximální detekovaná zóna pro pohybující se cíl
     max_still_distance_gate:
       name: Maximální detekovaná zóna pro statický cíl
+  
   - platform: template
     name: "Hlasitost"
     icon: mdi:volume-high
     id: player_volume
+    entity_category: config
     min_value: 1
     max_value: 10
     restore_value: true
@@ -213,6 +570,28 @@ number:
             int volume = 3*x;
             id(player).set_volume(volume);
             ESP_LOGD("Volume", "Nastavuji hlasitost na: %d", volume);
+
+  - platform: template
+    name: "Jas"
+    icon: mdi:brightness-4
+    id: brightness
+    entity_category: config
+    min_value: 1
+    max_value: 10
+    restore_value: true
+    initial_value: 10
+    step: 1
+    set_action:
+      - if:
+          condition:
+            light.is_on: diods
+          then:
+            - lambda: |-
+                int brightness_value = x;
+                auto call = id(diods).turn_on();
+                call.set_brightness(brightness_value / 10.0);
+                call.perform();
+                ESP_LOGD("Brightness", "Nastavuji jas na: %d%%", brightness_value);
 
 
 text_sensor:
@@ -251,3 +630,102 @@ sensor:
 time:
   - platform: sntp
     id: my_time
+    on_time:
+      - seconds: 0
+        minutes: 0
+        hours: 6
+        then:
+          - lambda: |-
+              auto time = id(my_time).now();
+              if (time.is_valid()) {
+                ESP_LOGI("Time", "Je 6:00, provádím akci.");
+                id(time_trigger_6_00).press();
+              }
+      
+      - seconds: 0
+        minutes: 58
+        hours: 6
+        then:
+          - lambda: |-
+              auto time = id(my_time).now();
+              if (time.is_valid()) {
+                ESP_LOGI("Time", "Je 6:58, provádím akci.");
+                id(time_trigger_6_58).press();
+              }
+      
+      - seconds: 0
+        minutes: 0
+        hours: 7
+        then:
+          - lambda: |-
+              auto time = id(my_time).now();
+              if (time.is_valid()) {
+                ESP_LOGI("Time", "Je 7:00, provádím akci.");
+                id(time_trigger_7_00).press();
+              }
+      
+      - seconds: 0
+        minutes: 0
+        hours: 12
+        then:
+          - lambda: |-
+              auto time = id(my_time).now();
+              if (time.is_valid()) {
+                ESP_LOGI("Time", "Je 12:00, provádím akci.");
+                id(time_trigger_12_00).press();
+              }
+
+      - seconds: 0
+        minutes: 30
+        hours: 12
+        then:
+          - lambda: |-
+              auto time = id(my_time).now();
+              if (time.is_valid()) {
+                ESP_LOGI("Time", "Je 12:30, provádím akci.");
+                id(time_trigger_12_30).press();
+              }
+
+      - seconds: 0
+        minutes: 30
+        hours: 15
+        then:
+          - lambda: |-
+              auto time = id(my_time).now();
+              if (time.is_valid()) {
+                ESP_LOGI("Time", "Je 15:30, provádím akci.");
+                id(time_trigger_15_30).press();
+              }
+
+      - seconds: 0
+        minutes: 00
+        hours: 17
+        then:
+          - lambda: |-
+              auto time = id(my_time).now();
+              if (time.is_valid()) {
+                ESP_LOGI("Time", "Je 17:00, provádím akci.");
+                id(time_trigger_17_00).press();
+              }
+
+      - seconds: 0
+        minutes: 00
+        hours: 22
+        then:
+          - lambda: |-
+              auto time = id(my_time).now();
+              if (time.is_valid()) {
+                ESP_LOGI("Time", "Je 22:00, provádím akci.");
+                id(time_trigger_22_00).press();
+              }
+      
+      - seconds: 0
+        minutes: 00
+        hours: 23
+        then:
+          - lambda: |-
+              auto time = id(my_time).now();
+              if (time.is_valid()) {
+                ESP_LOGI("Time", "Je 23:00, provádím akci.");
+                id(time_trigger_23_00).press();
+              }
