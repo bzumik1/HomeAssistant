@@ -123,6 +123,7 @@ binary_sensor:
     name: "Stav přehrávání"
     id: dfplayer_playing
     icon: mdi:play-pause
+    entity_category: diagnostic
     lambda: |-
       if (id(player).is_playing()) {
         return true;
@@ -152,11 +153,13 @@ binary_sensor:
 
     has_moving_target:
       name: Pohybující se objekt
+      entity_category: diagnostic
       on_state:
         - logger.log: "Pohybující objekt detekován"
         
     has_still_target:
       name: Nepohybující se objekt
+      entity_category: diagnostic
       on_state:
         - logger.log: "Nepohybující se objekt detekován"
 
@@ -447,6 +450,7 @@ sensor:
   - platform: ld2410
     detection_distance:
         name: Vzdálenost detekovaného objektu
+        entity_category: diagnostic
   
   - platform: bmp280
     address: 0x76
