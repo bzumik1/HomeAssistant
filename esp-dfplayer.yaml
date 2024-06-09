@@ -21,6 +21,8 @@ wifi:
   ap:
     ssid: "${name}.o"
 
+captive_portal:
+
 logger:
   # baud_rate: 0
 
