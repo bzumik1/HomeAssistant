@@ -1,70 +1,93 @@
+substitutions:
+  name: libre-garage-door
+
 esphome:
-  name: upk2esphome-bk7231n
+  name: ${name}
 
 bk72xx:
   board: generic-bk7231n-qfn32-tuya
 
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  
+  ap:
+    ssid: "${name}.o"
+    password: !secret esp_home_fallback_wifi_password
+
 logger:
 
-web_server:
-
-captive_portal:
-
-mdns:
-
 api:
-  password: !secret esp_home_api_password
+  encryption:
+    key: !secret esp_home_api_password
 
 ota:
   password: !secret esp_home_ota_password
 
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  ap:
-
-button:
-  - platform: restart
-    name: Restart
-
 debug:
   update_interval: 30s
+
+
+
+button:
+  - platform: template
+    name: "${name} vrata od garáže"
+    icon: mdi:garage
+    id: garage_button
+    on_press:
+      - switch.turn_off: relay
+      - switch.turn_on: relay
+      - delay: 0.1s
+      - switch.turn_off: relay
+
+switch:
+  - platform: gpio
+    internal: true
+    id: relay
+    name: Relay 1
+    pin: P6
+
+status_led:
+  pin: P9
 
 text_sensor:
   - platform: debug
     reset_reason:
-      name: Reset Reason
+      name: ${name} důvod restartu
   - platform: libretiny
     version:
-      name: LibreTiny Version
-
-sensor:
-  - platform: uptime
-    name: Uptime
+      name: ${name} LibreTiny version
 
 binary_sensor:
   - platform: gpio
-    id: binary_switch_1
+    id: binary_relay
+    name: ${name} tlačítko
+    icon: mdi:button-pointer
     pin:
       number: P26
       inverted: true
       mode: INPUT_PULLUP
     on_press:
       then:
-        - switch.toggle: switch_1
+        - switch.toggle: relay
 
   - platform: gpio
-    name: "Door Sensor 08"
+    name: "${name} dveřní senzor"
+    device_class: GARAGE_DOOR
+    icon: mdi:garage-open-variant
     pin:
       number: P8
       inverted: true
       mode: INPUT_PULLUP
+  
+  - platform: status
+    name: "${name} připojení k HA"
+    id: connection_to_ha
 
-switch:
-  - platform: gpio
-    id: switch_1
-    name: Relay 1
-    pin: P6
-
-status_led:
-  pin: P9
+sensor:
+  - platform: wifi_signal
+    name: "${name} signál"
+    update_interval: 10s
+  
+  - platform: uptime
+    name: "${name} doba běhu"
