@@ -1,0 +1,170 @@
+packages:
+  common: !include common.yaml
+
+
+esp8266:
+  board: esp8285
+  restore_from_flash: true
+
+
+# Dissable logging
+logger:
+  baud_rate: 0
+
+
+output:
+  - platform: gpio
+    pin: GPIO4
+    id: relay1
+  
+  - platform: gpio
+    pin: GPIO5
+    id: relay2
+
+
+switch:
+  - platform: output
+    name: "${name} relé 1"
+    icon: mdi:toggle-switch-variant
+    restore_mode: RESTORE_DEFAULT_ON
+    output: relay1
+    id: switch_relay1
+
+  - platform: output
+    name: "${name} relé 2"
+    icon: mdi:toggle-switch-variant
+    restore_mode: RESTORE_DEFAULT_ON
+    output: relay2
+    id: switch_relay2
+
+
+light:
+  - platform: status_led
+    name: "${name} stavová LED"
+    icon: mdi:led-on
+    entity_category: config
+    pin:
+      number: GPIO12
+      inverted: true
+
+
+binary_sensor:
+  # Wired switch 1
+  - platform: gpio
+    name: "${name} vypínač 1"
+    icon: mdi:light-switch
+    id: the_switch_1
+    pin:
+      number: GPIO1
+      mode: INPUT_PULLUP
+      inverted: true
+    on_multi_click:
+      # Single press
+      - timing:
+          - ON for at most 400ms
+          - OFF for at least 210ms
+        then:
+          - if:
+              condition:
+                and:
+                  - wifi.connected:
+                  - api.connected:
+                  - switch.is_on: switch_relay1
+              then:
+                - homeassistant.event:
+                    event: esphome.${name}_switch1_single_press
+              else:
+                - switch.toggle: switch_relay1
+
+      # Double press
+      - timing:
+        - ON for at most 400ms
+        - OFF for at most 200ms
+        - ON for at most 400ms
+        - OFF for at least 200ms
+        then:
+          - homeassistant.event:
+              event: esphome.${name}_switch1_double_press
+
+      # Long press
+      - timing:
+        - ON for at least 500ms
+        then:
+          - homeassistant.event:
+              event: esphome.${name}_switch1_long_press
+
+      # Relay toggle
+      - timing:
+          - ON for at least 1500ms
+        then:
+          - switch.toggle: switch_relay1
+
+  # Wired switch 2
+  - platform: gpio
+    name: "${name} vypínač 2"
+    icon: mdi:light-switch
+    id: the_switch_2
+    pin:
+      number: GPIO3
+      mode: INPUT_PULLUP
+      inverted: true
+    on_multi_click:
+      # Single press
+      - timing:
+          - ON for at most 400ms
+          - OFF for at least 210ms
+        then:
+          - if:
+              condition:
+                and:
+                  - wifi.connected:
+                  - api.connected:
+                  - switch.is_on: switch_relay2
+              then:
+                - homeassistant.event:
+                    event: esphome.${name}_switch2_single_press
+              else:
+                - switch.toggle: switch_relay2
+
+      # Double press
+      - timing:
+        - ON for at most 400ms
+        - OFF for at most 200ms
+        - ON for at most 400ms
+        - OFF for at least 200ms
+        then:
+          - homeassistant.event:
+              event: esphome.${name}_switch2_double_press
+
+      # Long press
+      - timing:
+        - ON for at least 500ms
+        then:
+          - homeassistant.event:
+              event: esphome.${name}_switch2_long_press
+
+      # Relay toggle
+      - timing:
+          - ON for at least 1500ms
+        then:
+          - switch.toggle: switch_relay2
+
+  # Button on mini switch
+  - platform: gpio
+    name: "${name} tlačítko"
+    icon: mdi:gesture-tap-button
+    pin:
+      number: GPIO14
+      mode: INPUT_PULLUP
+      inverted: true
+    on_multi_click:
+      - timing:
+          - ON for at most 1s
+          - OFF for at least 0.2s
+        then:
+          - switch.toggle: switch_relay1
+          - switch.toggle: switch_relay2
+
+time:
+  - platform: sntp
+    id: my_time
