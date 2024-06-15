@@ -1,0 +1,7 @@
+substitutions:
+  name: "esp-shelly-2pm-1"
+  # Relay trip limits
+  max_power: "3600.0"
+  max_temp: "80.0"
+
+<<: !include templates/template-esp-shelly-2pm-event.yaml
