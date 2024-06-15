@@ -1,30 +1,10 @@
-esphome:
-  name: ${name}
+packages:
+  common: !include common.yaml
+
 
 esp32:
   board: esp32dev
 
-logger:
-  level: INFO
-
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret esp_home_api_password
-
-ota:
-  password: !secret esp_home_ota_password
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "${name}.o"
-    password: !secret esp_home_fallback_wifi_password
-
-captive_portal:
 
 uart:
   tx_pin: GPIO25
@@ -33,13 +13,16 @@ uart:
   parity: NONE
   stop_bits: 2
 
+
 output:
   - platform: gpio
     pin: GPIO27
     id: relay1
+
   - platform: gpio
     pin: GPIO14
     id: relay2
+
 
 switch:
   - platform: output
@@ -48,12 +31,14 @@ switch:
     restore_mode: RESTORE_DEFAULT_ON
     output: relay1
     id: switch_relay1
+
   - platform: output
     name: "${name} relé 2"
     icon: mdi:toggle-switch-variant
     restore_mode: RESTORE_DEFAULT_ON
     output: relay2
     id: switch_relay2
+
 
 light:
   - platform: status_led
@@ -66,11 +51,8 @@ light:
       inverted: True
     internal: True
 
+
 binary_sensor:
-  # Connection to HA
-  - platform: status
-    name: "${name} připojení k HA"
-    id: connection_to_ha
 
   # Wired switch 1
   - platform: gpio
@@ -180,16 +162,6 @@ binary_sensor:
           - switch.toggle: switch_relay1
           - switch.toggle: switch_relay2
 
-button:
-  - platform: restart
-    name: "${name} restartování"
-
-text_sensor:
-  - platform: wifi_info
-    ip_address:
-      name: "${name} IP adresa"
-      icon: mdi:ip-network
-
 sensor:
   - platform: bl0939
     update_interval: 10s
@@ -211,13 +183,6 @@ sensor:
       name: "${name} spotřeba 2"
     energy_total:
       name: "${name} spotřeba celkem"
-
-  - platform: wifi_signal
-    name: "${name} signál"
-    update_interval: 10s
-  
-  - platform: uptime
-    name: "${name} doba běhu"
 
 time:
   - platform: sntp

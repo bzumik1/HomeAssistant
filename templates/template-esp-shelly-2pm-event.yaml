@@ -1,4 +1,5 @@
-<<: !include common.yaml
+packages:
+  common: !include common.yaml
 
 esp32:
   board: esp32doit-devkit-v1
@@ -38,10 +39,6 @@ status_led:
     inverted: true
 
 binary_sensor:
-  # Connection to HA
-  - platform: status
-    name: "${name} připojení k HA"
-    id: connection_to_ha
 
   # Wired switch 1
   - platform: gpio
@@ -159,17 +156,6 @@ binary_sensor:
           - switch.toggle: switch_relay1
           - switch.toggle: switch_relay2
 
-button:
-  - platform: restart
-    name: "${name} restartování"
-    entity_category: 'diagnostic'
-
-text_sensor:
-  - platform: wifi_info
-    ip_address:
-      name: "${name} IP adresa"
-      icon: mdi:ip-network
-
 sensor:
   #power monitoring
   - platform: ade7953_i2c
@@ -262,14 +248,6 @@ sensor:
     pin: GPIO35
     attenuation: 11db
     update_interval: 60s
-
-  - platform: wifi_signal
-    name: "${name} signál"
-    entity_category: 'diagnostic'
-    update_interval: 10s
-  
-  - platform: uptime
-    name: "${name} doba běhu"
 
 time:
   - platform: sntp

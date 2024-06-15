@@ -1,33 +1,16 @@
-esphome:
-  name: ${name}
+packages:
+  common: !include common.yaml
+
 
 esp8266:
   board: esp8285
   restore_from_flash: true
 
-# Enable logging
+
+# Turn off logging
 logger:
-  #Turn off RX TX
   baud_rate: 0
 
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret esp_home_api_password
-
-ota:
-  password: !secret esp_home_ota_password
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "${name}.o"
-    password: !secret esp_home_fallback_wifi_password
-
-captive_portal:
 
 globals:
   - id: dissable_relay1
@@ -39,10 +22,12 @@ globals:
     restore_value: yes
     initial_value: "false"
 
+
 button:
   - platform: factory_reset
     name: Resetování do továrního nastavení
     id: reset
+
 
 output:
   - platform: gpio
@@ -51,6 +36,7 @@ output:
   - platform: gpio
     pin: GPIO5
     id: relay2
+
 
 light:
   - platform: status_led
@@ -73,6 +59,7 @@ light:
     id: light2
     output: relay2
     restore_mode: RESTORE_DEFAULT_OFF
+
 
 binary_sensor:
   # Wired switch 1
@@ -128,6 +115,7 @@ binary_sensor:
   - platform: status
     name: "${name} stav"
 
+
 switch:
   - platform: template
     name: "Deaktivovat relay 1"
@@ -163,19 +151,6 @@ switch:
             id: dissable_relay2
             value: "false"
 
-text_sensor:
-  - platform: wifi_info
-    ip_address:
-      name: "${name} IP adresa"
-      icon: mdi:ip-network
-
-sensor:
-  - platform: wifi_signal
-    name: "${name} signál"
-    update_interval: 10s
-  
-  - platform: uptime
-    name: "${name} doba běhu"
 
 time:
   - platform: sntp

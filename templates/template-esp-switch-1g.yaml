@@ -1,45 +1,23 @@
-esphome:
-  name: ${name}
+packages:
+  common: !include common.yaml
+
 
 esp8266:
   board: esp8285
   restore_from_flash: true
 
-# Enable logging
-logger:
-
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret esp_home_api_password
-
-# Enable REST API
-web_server:
-  port: 80
-
-ota:
-  password: !secret esp_home_ota_password
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "${name}.o"
-    password: !secret esp_home_fallback_wifi_password
-
-captive_portal:
 
 button:
   - platform: factory_reset
     name: Resetování do továrního nastavení
     id: reset
 
+
 output:
   - platform: gpio
     pin: GPIO12
     id: relay
+
 
 light:
   - platform: status_led
@@ -55,6 +33,7 @@ light:
     id: mini_relay
     output: relay
     restore_mode: RESTORE_DEFAULT_OFF
+
 
 binary_sensor:
   # Wired switch
@@ -106,19 +85,6 @@ binary_sensor:
   - platform: status
     name: "${name} stav"
 
-text_sensor:
-  - platform: wifi_info
-    ip_address:
-      name: "${name} IP adresa"
-      icon: mdi:ip-network
-
-sensor:
-  - platform: wifi_signal
-    name: "${name} signál"
-    update_interval: 10s
-  
-  - platform: uptime
-    name: "${name} doba běhu"
 
 time:
   - platform: sntp

@@ -1,16 +1,20 @@
 esphome:
   name: ${name}
 
+
 logger:
   level: INFO
+
 
 # Enable Home Assistant API
 api:
   encryption:
     key: !secret esp_home_api_password
 
+
 ota:
   password: !secret esp_home_ota_password
+
 
 wifi:
   ssid: !secret wifi_ssid
@@ -21,4 +25,35 @@ wifi:
     ssid: "${name}.o"
     password: !secret esp_home_fallback_wifi_password
 
+
 captive_portal:
+
+
+
+button:
+  - platform: restart
+    name: "${name} restartování"
+    entity_category: 'diagnostic'
+
+
+binary_sensor:
+  - platform: status
+    name: "${name} připojení k HA"
+    id: connection_to_ha
+
+
+sensor:
+  - platform: wifi_signal
+    name: "${name} signál"
+    entity_category: 'diagnostic'
+    update_interval: 10s
+  
+  - platform: uptime
+    name: "${name} doba běhu"
+
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "${name} IP adresa"
+      icon: mdi:ip-network

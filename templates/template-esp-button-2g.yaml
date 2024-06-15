@@ -1,41 +1,26 @@
-esphome:
-  name: ${name}
+packages:
+  common: !include common.yaml
+
 
 esp8266:
   board: esp8285
   restore_from_flash: true
 
-# Enable logging
+
+# Dissable logging
 logger:
-  #Turn off RX TX
   baud_rate: 0
 
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret esp_home_api_password
-
-ota:
-  password: !secret esp_home_ota_password
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "${name}.o"
-    password: !secret esp_home_fallback_wifi_password
-
-captive_portal:
 
 output:
   - platform: gpio
     pin: GPIO4
     id: relay1
+  
   - platform: gpio
     pin: GPIO5
     id: relay2
+
 
 switch:
   - platform: output
@@ -44,12 +29,14 @@ switch:
     restore_mode: RESTORE_DEFAULT_ON
     output: relay1
     id: switch_relay1
+
   - platform: output
     name: "${name} relé 2"
     icon: mdi:toggle-switch-variant
     restore_mode: RESTORE_DEFAULT_ON
     output: relay2
     id: switch_relay2
+
 
 light:
   - platform: status_led
@@ -60,12 +47,8 @@ light:
       number: GPIO12
       inverted: true
 
-binary_sensor:
-  # Connection to HA
-  - platform: status
-    name: "${name} připojení k HA"
-    id: connection_to_ha
 
+binary_sensor:
   # Wired switch 1
   - platform: gpio
     name: "${name} vypínač 1"
@@ -183,20 +166,6 @@ binary_sensor:
         then:
           - switch.toggle: switch_relay1
           - switch.toggle: switch_relay2
-
-text_sensor:
-  - platform: wifi_info
-    ip_address:
-      name: "${name} IP adresa"
-      icon: mdi:ip-network
-
-sensor:
-  - platform: wifi_signal
-    name: "${name} signál"
-    update_interval: 10s
-  
-  - platform: uptime
-    name: "${name} doba běhu"
 
 time:
   - platform: sntp
