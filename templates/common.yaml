@@ -13,7 +13,8 @@ api:
 
 
 ota:
-  password: !secret esp_home_ota_password
+  - platform: esphome
+    password: !secret esp_home_ota_password
 
 
 wifi:
