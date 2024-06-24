@@ -20,14 +20,14 @@ output:
 
 switch:
   - platform: output
-    name: "${name} relé 1"
+    name: "relé 1"
     icon: mdi:toggle-switch-variant
     restore_mode: RESTORE_DEFAULT_ON
     output: relay1
     id: switch_relay1
   
   - platform: output
-    name: "${name} relé 2"
+    name: "relé 2"
     icon: mdi:toggle-switch-variant
     restore_mode: RESTORE_DEFAULT_ON
     output: relay2
@@ -42,7 +42,7 @@ binary_sensor:
 
   # Wired switch 1
   - platform: gpio
-    name: "${name} vypínač 1"
+    name: "vypínač 1"
     icon: mdi:light-switch
     id: the_switch_1
     pin:
@@ -90,7 +90,7 @@ binary_sensor:
 
   # Wired switch 2
   - platform: gpio
-    name: "${name} vypínač 2"
+    name: "vypínač 2"
     icon: mdi:light-switch
     id: the_switch_2
     pin:
@@ -138,7 +138,7 @@ binary_sensor:
 
   # Button on mini switch
   - platform: gpio
-    name: "${name} tlačítko"
+    name: "tlačítko"
     icon: mdi:gesture-tap-button
     pin:
       number: GPIO4
@@ -161,20 +161,18 @@ sensor:
   - platform: ade7953_i2c
     irq_pin: GPIO27 # Prevent overheating by setting this
     voltage:
-      name: "${name} napětí"
-      entity_category: 'diagnostic'
+      name: "napětí"
     # On the Shelly 2.5 channels are mixed ch1=B ch2=A
     current_a:
-      name: "${name} proud"
-      entity_category: 'diagnostic'
+      name: "proud 1"
     current_b:
-      name: "${name} proud"
-      entity_category: 'diagnostic'
+      name: "proud 2"
     active_power_a:
-      name: "${name} výkon"
+      name: "výkon 1"
       id: power_channel_2
-      entity_category: 'diagnostic'
-      # active_power_a is normal, so don't multiply by -1
+      # active_power_a is inverted, so multiply by -1
+      filters:
+        - multiply: -1
       on_value_range:
         - above: ${max_power}
           then:
@@ -182,13 +180,12 @@ sensor:
             - homeassistant.service:
                 service: persistent_notification.create
                 data:
-                  title: "Zpráva od ${name}"
+                  title: "Zpráva od ${friendly_name}"
                 data_template:
                   message: "Vypánám relé 2 kvůli tomu, že bylo dosaženo maximálního výkonu ${max_power}W"
     active_power_b:
-      name: "${nabe} výkon"
+      name: "výkon 2"
       id: power_channel_1
-      entity_category: 'diagnostic'
       # active_power_b is inverted, so multiply by -1
       filters:
         - multiply: -1
@@ -199,23 +196,23 @@ sensor:
             - homeassistant.service:
                 service: persistent_notification.create
                 data:
-                  title: "Zpráva od ${name}"
+                  title: "Zpráva od ${friendly_name}"
                 data_template:
                   message: "Vypánám relé 1 kvůli tomu, že bylo dosaženo maximálního výkonu ${max_power}W"
     update_interval: 30s
 
   - platform: total_daily_energy
-    name: "${name} celková denní spotřeba 1"
+    name: "spotřeba 1"
     power_id: power_channel_1
   
   - platform: total_daily_energy
-    name: "${name} celková denní spotřeba 2"
+    name: "spotřeba 2"
     power_id: power_channel_2
 
     #temperature sensor
   - platform: ntc
     sensor: temp_resistance_reading
-    name: "${name} teplota"
+    name: "teplota"
     unit_of_measurement: "°C"
     accuracy_decimals: 1
     icon: "mdi:thermometer"
@@ -233,7 +230,7 @@ sensor:
           - homeassistant.service:
                 service: persistent_notification.create
                 data:
-                  title: "Zpráva od ${name}"
+                  title: "Zpráva od ${friendly_name}"
                 data_template:
                   message: "Vypánám relé 1 a relé 2 kvůli tomu, že bylo dosaženo maximální teploty zařízení ${max_temp}°C"
 

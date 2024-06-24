@@ -1,5 +1,6 @@
 esphome:
   name: ${name}
+  friendly_name: ${friendly_name}
 
 
 logger:
@@ -33,28 +34,28 @@ captive_portal:
 
 button:
   - platform: restart
-    name: "${name} restartování"
+    name: "restartování"
     entity_category: 'diagnostic'
 
 
 binary_sensor:
   - platform: status
-    name: "${name} připojení k HA"
+    name: "připojení k HA"
     id: connection_to_ha
 
 
 sensor:
   - platform: wifi_signal
-    name: "${name} signál"
+    name: "signál"
     entity_category: 'diagnostic'
     update_interval: 10s
   
   - platform: uptime
-    name: "${name} doba běhu"
+    name: "doba běhu"
 
 
 text_sensor:
   - platform: wifi_info
     ip_address:
-      name: "${name} IP adresa"
+      name: "IP adresa"
       icon: mdi:ip-network

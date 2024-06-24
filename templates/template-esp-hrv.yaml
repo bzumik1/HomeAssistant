@@ -1,4 +1,5 @@
-<<: !include common.yaml
+packages:
+  common: !include common.yaml
 
 # Basic Config
 esphome:
@@ -151,3 +152,12 @@ fan:
       - "AUTO"
       - "MANUAL"
       - "BOOST"
+    on_preset_set:
+      then:
+        - lambda: |-
+            if (id(hrv_fun).preset_mode == "BOOST") {
+              id(hrv_fun).turn_on().set_speed(1.0).perform();  // Zapněte ventilátor na plný výkon
+              ESPHome::Scheduler::shared_instance().set_timeout(15 * 60 * 1000, []() {
+                id(hrv_fun).turn_off().perform();  // Vypněte ventilátor
+              });
+            }

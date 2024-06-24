@@ -1,7 +1,7 @@
 # Configuration
 substitutions:
-  name: "esp-vypinac-koupelna"
-  friendly_name: "Vypínač - koupelna"
+  name: esp-vypinac-chodba
+  friendly_name: Vypínač - chodba
 
 packages:
   common: !include templates/template-esp-sonoff-dual-r3-event.yaml

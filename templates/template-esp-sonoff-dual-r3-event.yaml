@@ -26,14 +26,14 @@ output:
 
 switch:
   - platform: output
-    name: "${name} relé 1"
+    name: "relé 1"
     icon: mdi:toggle-switch-variant
     restore_mode: RESTORE_DEFAULT_ON
     output: relay1
     id: switch_relay1
 
   - platform: output
-    name: "${name} relé 2"
+    name: "relé 2"
     icon: mdi:toggle-switch-variant
     restore_mode: RESTORE_DEFAULT_ON
     output: relay2
@@ -42,7 +42,7 @@ switch:
 
 light:
   - platform: status_led
-    name: "${name} stavová LED"
+    name: "stavová LED"
     id: led_status
     icon: mdi:led-on
     entity_category: config
@@ -56,7 +56,7 @@ binary_sensor:
 
   # Wired switch 1
   - platform: gpio
-    name: "${name} vypínač 1"
+    name: "vypínač 1"
     icon: mdi:light-switch
     id: the_switch_1
     pin:
@@ -101,7 +101,7 @@ binary_sensor:
 
   # Wired switch 2
   - platform: gpio
-    name: "${name} vypínač 2"
+    name: "vypínač 2"
     icon: mdi:light-switch
     id: the_switch_2
     pin:
@@ -146,7 +146,7 @@ binary_sensor:
 
   # Button on mini switch
   - platform: gpio
-    name: "${name} tlačítko"
+    name: "tlačítko"
     icon: mdi:gesture-tap-button
     pin:
       number: GPIO00
@@ -166,23 +166,23 @@ sensor:
   - platform: bl0939
     update_interval: 10s
     voltage:
-      name: "${name} napětí"
+      name: "napětí"
     current_1:
-      name: "${name} proud 1"
+      name: "proud 1"
       disabled_by_default: True
     current_2:
-      name: "${name} proud 2"
+      name: "proud 2"
       disabled_by_default: True
     active_power_1:
-      name: "${name} výkon 1"
+      name: "výkon 1"
     active_power_2:
-      name: "${name} výkon 2"
+      name: "výkon 2"
     energy_1:
-      name: "${name} spotřeba 1"
+      name: "spotřeba 1"
     energy_2:
-      name: "${name} spotřeba 2"
+      name: "spotřeba 2"
     energy_total:
-      name: "${name} spotřeba celkem"
+      name: "spotřeba celkem"
 
 time:
   - platform: sntp
