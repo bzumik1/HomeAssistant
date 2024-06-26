@@ -1,6 +1,9 @@
 packages:
   common: !include common.yaml
 
+esp32_improv:
+  authorizer: none
+
 # Basic Config
 esphome:
   platform: ESP32

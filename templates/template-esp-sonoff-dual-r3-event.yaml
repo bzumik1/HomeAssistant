@@ -1,6 +1,8 @@
 packages:
   common: !include common.yaml
 
+esp32_improv:
+  authorizer: none
 
 esp32:
   board: esp32dev

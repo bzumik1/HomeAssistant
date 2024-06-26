@@ -1,6 +1,9 @@
 packages:
   common: !include common.yaml
 
+esp32_improv:
+  authorizer: none
+
 esp32:
   board: esp32doit-devkit-v1
   framework:
