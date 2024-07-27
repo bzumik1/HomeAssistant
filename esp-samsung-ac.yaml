@@ -1,5 +1,6 @@
 substitutions:
   name: esp-samsung-ac
+  friendly_name: Klimatizace SAMSUNG
 
 packages:
   common: !include templates/common.yaml
