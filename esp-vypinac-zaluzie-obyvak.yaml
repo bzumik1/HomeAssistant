@@ -1,0 +1,11 @@
+# Configuration
+substitutions:
+  name: "esp-vypinac-zaluzie-obyvak"
+  friendly_name: "Vypínač - žaluzie obývák"
+  # Relay trip limits
+  max_power: "3600.0"
+  max_temp: "80.0"
+
+packages:
+  common: !include templates/template-esp-shelly-2pm-event.yaml
+  bluetooth-proxy: !include templates/bluetooth-proxy.yaml

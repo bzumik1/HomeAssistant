@@ -22,6 +22,22 @@ output:
     id: relay2
 
 switch:
+  - platform: template
+    name: "nezávislý režim vypínač 1"
+    icon: mdi:toggle-switch-outline
+    id: detached_mode_switch_1
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: CONFIG
+
+  - platform: template
+    name: "nezávislý režim vypínač 2"
+    icon: mdi:toggle-switch-outline
+    id: detached_mode_switch_2
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: CONFIG
+
   - platform: output
     name: "relé 1"
     icon: mdi:toggle-switch-variant
@@ -63,6 +79,7 @@ binary_sensor:
                 and:
                   - wifi.connected:
                   - api.connected:
+                  - switch.is_on: detached_mode_switch_1
                   - switch.is_on: switch_relay1
               then:
                 - homeassistant.event:
@@ -111,6 +128,7 @@ binary_sensor:
                 and:
                   - wifi.connected:
                   - api.connected:
+                  - switch.is_on: detached_mode_switch_2
                   - switch.is_on: switch_relay2
               then:
                 - homeassistant.event:
