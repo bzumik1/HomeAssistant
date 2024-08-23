@@ -3,6 +3,7 @@ packages:
 
 esp32_improv:
   authorizer: none
+  wifi_timeout: 5min
 
 esp32:
   board: esp32doit-devkit-v1
