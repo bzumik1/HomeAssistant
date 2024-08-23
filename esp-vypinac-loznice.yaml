@@ -4,7 +4,7 @@ substitutions:
   friendly_name: "Vypínač - ložnice"
   # Relay trip limits
   max_power: "3600.0"
-  max_temp: "80.0"
+  max_temp: "95.0"
 
 packages:
   common: !include templates/template-esp-shelly-2pm-event.yaml
