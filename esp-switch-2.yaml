@@ -1,5 +1,6 @@
 # Configuration
 substitutions:
   name: esp-switch-2
+  friendly_name: "Vypínač - linka"
 
 <<: !include templates/template-esp-switch-1g.yaml
