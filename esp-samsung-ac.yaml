@@ -51,6 +51,8 @@ samsung_ac:
         name: "Klimatizace - ložnice požadovaná teplota"
       power:
         name: "Klimatizace - ložnice vypínač"
+      automatic_cleaning:
+        name: "Klimatizace - ložnice automatické čištění"
     
     # LIVING ROOM
     - address: "20.00.01" # unit address
@@ -68,6 +70,8 @@ samsung_ac:
         name: "Klimatizace - obývák požadovaná teplota"
       power:
         name: "Klimatizace - obývák vypínač"
+      automatic_cleaning:
+        name: "Klimatizace - obývák automatické čištění"
       mode:
         name: "Klimatizace - obývák mód"
     
