@@ -1,8 +1,8 @@
-# Do not include Secrets
-/EspHome/secrets.yaml
+# Ignore all secrets.yaml files
+**/secrets.yaml
 
-# Do not include .esphome
-/EspHome/.esphome/
+# Ignore all .esphome directories
+**/.esphome/
 
-# Ignore .DS_Store
-/.DS_Store
+# Ignore all .DS_Store files
+**/.DS_Store

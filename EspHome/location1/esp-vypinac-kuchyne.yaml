@@ -1,0 +1,11 @@
+# Configuration
+substitutions:
+  name: "esp-vypinac-kuchyne"
+  friendly_name: "Vypínač - kuchyně"
+  # Relay trip limits
+  max_power: "3600.0"
+  max_temp: "95.0"
+
+packages:
+  shelly-template: github://bzumik1/HomeAssistant/EspHome/templates/template-esp-shelly-2pm-event.yaml@main
+  bluetooth-proxy: github://bzumik1/HomeAssistant/EspHome/templates/bluetooth-proxy.yaml@main
