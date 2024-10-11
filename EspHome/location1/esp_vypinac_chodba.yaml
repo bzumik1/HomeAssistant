@@ -1,5 +1,0 @@
-# Configuration
-substitutions:
-  name: esp_vypinac_chodba
-
-<<: !include templates/template-esp-sonoff-dual-r3-event.yaml
