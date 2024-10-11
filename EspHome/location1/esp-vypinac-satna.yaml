@@ -7,5 +7,5 @@ substitutions:
   max_temp: "95.0"
 
 packages:
-  shelly-template: github://bzumik1/HomeAssistant/templates/template-esp-shelly-2pm-event.yaml@main
-  bluetooth-proxy: github://bzumik1/HomeAssistant/templates/bluetooth-proxy.yaml@main
+  shelly-template: github://bzumik1/HomeAssistant/EspHome/templates/template-esp-shelly-2pm-event.yaml@main
+  bluetooth-proxy: github://bzumik1/HomeAssistant/EspHome/templates/bluetooth-proxy.yaml@main

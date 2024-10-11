@@ -4,5 +4,5 @@ substitutions:
   friendly_name: Vypínač - chodba
 
 packages:
-  sonoff-template: github://bzumik1/HomeAssistant/templates/template-esp-sonoff-dual-r3-event.yaml@main
-  bluetooth-proxy: github://bzumik1/HomeAssistant/templates/bluetooth-proxy.yaml@main
+  sonoff-template: github://bzumik1/HomeAssistant/EspHome/templates/template-esp-sonoff-dual-r3-event.yaml@main
+  bluetooth-proxy: github://bzumik1/HomeAssistant/EspHome/templates/bluetooth-proxy.yaml@main

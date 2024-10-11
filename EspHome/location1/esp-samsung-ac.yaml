@@ -3,7 +3,7 @@ substitutions:
   friendly_name: Klimatizace SAMSUNG
 
 packages:
-  common: !include templates/common.yaml
+  common: github://bzumik1/HomeAssistant/EspHome/templates/common@main
 
 esp32:
   board: m5stack-atom
