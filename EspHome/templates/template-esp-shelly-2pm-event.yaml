@@ -1,5 +1,5 @@
 packages:
-  common: github://bzumik1/HomeAssistant/templates/common.yaml@main
+  common: !include common.yaml
 
 esp32_improv:
   authorizer: none
