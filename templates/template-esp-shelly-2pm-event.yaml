@@ -191,7 +191,7 @@ sensor:
       name: "proud 2"
     active_power_a:
       name: "výkon 1"
-      id: power_channel_2
+      id: power_channel_1
       # active_power_a is inverted, so multiply by -1
       filters:
         - multiply: -1
@@ -207,7 +207,7 @@ sensor:
                   message: "Vypánám relé 2 kvůli tomu, že bylo dosaženo maximálního výkonu ${max_power}W"
     active_power_b:
       name: "výkon 2"
-      id: power_channel_1
+      id: power_channel_2
       # active_power_b is inverted, so multiply by -1
       filters:
         - multiply: -1
