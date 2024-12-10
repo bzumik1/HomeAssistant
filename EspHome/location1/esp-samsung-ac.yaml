@@ -8,6 +8,10 @@ packages:
 esp32:
   board: m5stack-atom
 
+esp32_improv:
+  authorizer: none
+  wifi_timeout: 5min
+
 
 
 # AC CONFIGURATION  
@@ -18,7 +22,7 @@ uart:
   parity: EVEN
 
 external_components:
-  - source: github://lanwin/esphome_samsung_ac@main
+  - source: github://omerfaruk-aran/esphome_samsung_hvac_bus@main
     components: [samsung_ac]
 
 samsung_ac:
@@ -33,10 +37,13 @@ samsung_ac:
       fast: true
       longreach: true
       windfree: true
+      eco: true
 
   devices:
     # BEDROOM
     - address: "20.00.00" # unit address
+      error_code:
+        name: "Klimatizace - ložnice error"
 
       # You could use the ESPHome/Homeassist climate control
       climate:
@@ -53,9 +60,13 @@ samsung_ac:
         name: "Klimatizace - ložnice vypínač"
       automatic_cleaning:
         name: "Klimatizace - ložnice automatické čištění"
+      mode:
+        name: "Klimatizace - ložnice mód"
     
     # LIVING ROOM
     - address: "20.00.01" # unit address
+      error_code:
+        name: "Klimatizace - obývák error"
 
       # You could use the ESPHome/Homeassist climate control
       climate:
@@ -77,49 +88,15 @@ samsung_ac:
     
     # OUTDOOR UNIT
     - address: "10.00.00"
+      error_code:
+        name: "Klimatizace - venkovní jednotka error"
       outdoor_temperature:
         name: "Klimatizace - venkovní teplota"
-      custom_sensor:
-        - name: "Klimatizace - napětí"
-          message: 0x24fc
-          device_class: voltage
-          state_class: measurement
-          unit_of_measurement: V
-        - name: "Klimatizace - proud"
-          message: 0x8217
-          device_class: current
-          state_class: measurement
-          unit_of_measurement: A
-          accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
-        - name: "Klimatizace - výkon"
-          message: 0x8413
-          device_class: energy
-          state_class: measurement
-          unit_of_measurement: W
-        - name: "Klimatizace - spotřeba"
-          message: 0x8414
-          device_class: energy
-          state_class: total_increasing
-          unit_of_measurement: kWh
-          accuracy_decimals: 1
-          filters:
-            - multiply: 0.001
-
-
-
-# DEVICE INFO
-text_sensor:
-  - platform: wifi_info
-    ip_address:
-      name: "${name} IP adresa"
-      icon: mdi:ip-network
-
-sensor:
-  - platform: wifi_signal
-    name: "${name} signál"
-    update_interval: 10s
-  
-  - platform: uptime
-    name: "${name} doba běhu"
+      outdoor_instantaneous_power:
+        name: "Klimatizace - výkon"
+      outdoor_cumulative_energy:
+        name: "Klimatizace - spotřeba"
+      outdoor_current:
+        name: "Klimatizace - proud"
+      outdoor_voltage:
+        name: "Klimatizace - napětí"
