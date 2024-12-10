@@ -98,8 +98,8 @@ light:
     icon: mdi:led-strip-variant
     cold_white: LED_channel_1_3
     warm_white: LED_channel_2_4
-    cold_white_color_temperature: 6500 K
-    warm_white_color_temperature: 2200 K
+    cold_white_color_temperature: ${cold_white_color_temperature}
+    warm_white_color_temperature: ${warm_white_color_temperature}
     # Koriguje minimální jas, čím vyšší hodnota tim menší minimalní jas
     gamma_correct: 1.2
     constant_brightness: true

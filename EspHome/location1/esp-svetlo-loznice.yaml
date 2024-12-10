@@ -1,0 +1,9 @@
+# Configuration
+substitutions:
+  name: "esp-svetlo-loznice"
+  friendly_name: "Světlo - ložnice"
+  cold_white_color_temperature: "6500 K"
+  warm_white_color_temperature: "2200 K"
+
+packages:
+  shelly-template: !include ./../templates/template-esp-an-penta-mini-wireless.yaml

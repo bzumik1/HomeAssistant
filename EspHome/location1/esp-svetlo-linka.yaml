@@ -1,0 +1,9 @@
+# Configuration
+substitutions:
+  name: "esp-svetlo-linka"
+  friendly_name: "Světlo - linka"
+  cold_white_color_temperature: "6500 K"
+  warm_white_color_temperature: "2200 K"
+
+packages:
+  penta-mini-template: github://bzumik1/HomeAssistant/EspHome/templates/template-esp-an-penta-mini-wireless.yaml@main
