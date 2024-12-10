@@ -1,7 +1,7 @@
 # Configuration
 substitutions:
-  name: "esp-vypinac-zaluzie-loznice"
-  friendly_name: "Vypínač - žaluzie ložnice"
+  name: "esp-vypinac-obyvak"
+  friendly_name: "Vypínač - obývák"
   # Relay trip limits
   max_power: "3600.0"
   max_temp: "95.0"
