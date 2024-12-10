@@ -27,24 +27,24 @@ i2c:
 
 sensor:
   - platform: internal_temperature
-    name: "Interní teplota"
+    name: "interní teplota"
     accuracy_decimals: 2
     update_interval: 30s
     
 binary_sensor:
   - platform: gpio
     pin: 2
-    name: "Tlačítko 1"
+    name: "tlačítko 1"
     filters:
       - invert:
   - platform: gpio
     pin: 8
-    name: "Tlačítko 2"
+    name: "tlačítko 2"
     filters:
       - invert:
   - platform: gpio
     pin: 9
-    name: "Tlačítko 3"
+    name: "tlačítko 3"
     filters:
       - invert:
 
@@ -94,7 +94,7 @@ output:
 
 light:
   - platform: cwww
-    name: "Světlo"
+    name: "světlo"
     icon: mdi:led-strip-variant
     cold_white: LED_channel_1_3
     warm_white: LED_channel_2_4
@@ -107,7 +107,7 @@ light:
 
 button:
   - platform: template
-    name: "Plný jas"
+    name: "plný jas"
     icon: mdi:weather-sunny-alert
     on_press:
       - output.set_level:
