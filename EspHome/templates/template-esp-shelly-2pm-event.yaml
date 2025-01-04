@@ -187,11 +187,13 @@ sensor:
     # On the Shelly 2.5 channels are mixed ch1=B ch2=A
     current_a:
       name: "proud 1"
+      id: current_1
     current_b:
       name: "proud 2"
+      id: current_2
     active_power_a:
       name: "výkon 1"
-      id: power_channel_1
+      id: active_power_1
       # active_power_a is inverted, so multiply by -1
       filters:
         - multiply: -1
@@ -207,7 +209,7 @@ sensor:
                   message: "Vypánám relé 2 kvůli tomu, že bylo dosaženo maximálního výkonu ${max_power}W"
     active_power_b:
       name: "výkon 2"
-      id: power_channel_2
+      id: active_power_2
       # active_power_b is inverted, so multiply by -1
       filters:
         - multiply: -1
@@ -221,15 +223,43 @@ sensor:
                   title: "Zpráva od ${friendly_name}"
                 data_template:
                   message: "Vypánám relé 1 kvůli tomu, že bylo dosaženo maximálního výkonu ${max_power}W"
-    update_interval: 30s
+    update_interval: 1s
+
+  - platform: template
+    name: "proud celkem"
+    icon: mdi:current-ac
+    unit_of_measurement: "A"
+    lambda: |-
+      return id(current_1).state + id(current_2).state;
+    update_interval: 1s
+
+  - platform: template
+    name: "výkon celkem"
+    icon: mdi:lightning-bolt
+    unit_of_measurement: "W"
+    lambda: |-
+      return id(active_power_1).state + id(active_power_2).state;
+    update_interval: 1s
 
   - platform: total_daily_energy
     name: "spotřeba 1"
-    power_id: power_channel_1
+    icon: mdi:counter
+    id: total_daily_energy_1
+    power_id: active_power_1
   
   - platform: total_daily_energy
     name: "spotřeba 2"
-    power_id: power_channel_2
+    icon: mdi:counter
+    id: total_daily_energy_2
+    power_id: active_power_2
+
+  - platform: template
+    name: "spotřeba celkem"
+    icon: mdi:counter
+    unit_of_measurement: "Wh"
+    lambda: |-
+      return id(total_daily_energy_1).state + id(total_daily_energy_2).state;
+    update_interval: 1s
 
     #temperature sensor
   - platform: ntc
