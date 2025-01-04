@@ -167,25 +167,46 @@ binary_sensor:
 
 sensor:
   - platform: bl0939
-    update_interval: 10s
+    update_interval: 1s
     voltage:
       name: "napětí"
     current_1:
       name: "proud 1"
-      disabled_by_default: True
+      id: current_1
     current_2:
       name: "proud 2"
-      disabled_by_default: True
+      id: current_2
     active_power_1:
       name: "výkon 1"
+      id: active_power_1
     active_power_2:
       name: "výkon 2"
+      id: active_power_2
     energy_1:
       name: "spotřeba 1"
+      icon: mdi:counter
     energy_2:
       name: "spotřeba 2"
+      icon: mdi:counter
     energy_total:
       name: "spotřeba celkem"
+      icon: mdi:counter
+
+  - platform: template
+    name: "výkon celkem"
+    icon: mdi:lightning-bolt
+    unit_of_measurement: "W"
+    lambda: |-
+      return id(active_power_1).state + id(active_power_2).state;
+    update_interval: 1s
+
+  - platform: template
+    name: "proud celkem"
+    icon: mdi:current-ac
+    unit_of_measurement: "A"
+    lambda: |-
+      return id(current_1).state + id(current_2).state;
+    update_interval: 1s
 
 time:
   - platform: sntp
