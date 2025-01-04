@@ -1,3 +1,6 @@
+substitutions:
+  measurement_interval: 1s
+
 packages:
   common: !include common.yaml
 
@@ -223,7 +226,7 @@ sensor:
                   title: "Zpráva od ${friendly_name}"
                 data_template:
                   message: "Vypánám relé 1 kvůli tomu, že bylo dosaženo maximálního výkonu ${max_power}W"
-    update_interval: 1s
+    update_interval: ${measurement_interval}
 
   - platform: template
     name: "proud celkem"
@@ -231,7 +234,7 @@ sensor:
     unit_of_measurement: "A"
     lambda: |-
       return id(current_1).state + id(current_2).state;
-    update_interval: 1s
+    update_interval: ${measurement_interval}
 
   - platform: template
     name: "výkon celkem"
@@ -239,7 +242,7 @@ sensor:
     unit_of_measurement: "W"
     lambda: |-
       return id(active_power_1).state + id(active_power_2).state;
-    update_interval: 1s
+    update_interval: ${measurement_interval}
 
   - platform: total_daily_energy
     name: "spotřeba 1"
@@ -259,7 +262,7 @@ sensor:
     unit_of_measurement: "Wh"
     lambda: |-
       return id(total_daily_energy_1).state + id(total_daily_energy_2).state;
-    update_interval: 1s
+    update_interval: ${measurement_interval}
 
     #temperature sensor
   - platform: ntc

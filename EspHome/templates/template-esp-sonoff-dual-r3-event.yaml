@@ -1,3 +1,6 @@
+substitutions:
+  measurement_interval: 1s
+
 packages:
   common: !include common.yaml
 
@@ -167,7 +170,7 @@ binary_sensor:
 
 sensor:
   - platform: bl0939
-    update_interval: 1s
+    update_interval: ${measurement_interval}
     voltage:
       name: "napětí"
     current_1:
@@ -198,7 +201,7 @@ sensor:
     unit_of_measurement: "W"
     lambda: |-
       return id(active_power_1).state + id(active_power_2).state;
-    update_interval: 1s
+    update_interval: ${measurement_interval}
 
   - platform: template
     name: "proud celkem"
@@ -206,7 +209,7 @@ sensor:
     unit_of_measurement: "A"
     lambda: |-
       return id(current_1).state + id(current_2).state;
-    update_interval: 1s
+    update_interval: ${measurement_interval}
 
 time:
   - platform: sntp
