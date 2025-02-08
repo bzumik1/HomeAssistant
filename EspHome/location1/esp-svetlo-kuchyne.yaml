@@ -1,0 +1,9 @@
+# Configuration
+substitutions:
+  name: "esp-svetlo-kuchyne"
+  friendly_name: "Světlo - kuchyně"
+  cold_white_color_temperature: "6500 K"
+  warm_white_color_temperature: "2200 K"
+
+packages:
+  penta-plus-template: github://bzumik1/HomeAssistant/EspHome/templates/template-esp-an-penta-plus-wireless.yaml@main
