@@ -6,4 +6,4 @@ substitutions:
   warm_white_color_temperature: "2200 K"
 
 packages:
-  shelly-template: !include ./../templates/template-esp-an-penta-mini-wireless.yaml
+  penta-mini-template: github://bzumik1/HomeAssistant/EspHome/templates/template-esp-an-penta-mini-wireless.yaml@main
