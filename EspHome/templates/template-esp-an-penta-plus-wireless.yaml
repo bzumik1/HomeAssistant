@@ -1,0 +1,117 @@
+packages:
+  common: !include common.yaml
+
+esp32_improv:
+  authorizer: none
+  wifi_timeout: 5min
+
+esphome:
+  platformio_options:
+    board_build.flash_mode: dio
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+
+i2c:
+  sda: 15
+  scl: 16
+  scan: true
+  id: I2C
+
+sensor:
+  - platform: internal_temperature
+    name: "interní teplota"
+    accuracy_decimals: 2
+    update_interval: 30s
+    
+binary_sensor:
+  - platform: gpio
+    pin: 36
+    name: "tlačítko 1"
+    filters:
+      - invert:
+  - platform: gpio
+    pin: 39
+    name: "tlačítko 2"
+    filters:
+      - invert:
+  - platform: gpio
+    pin: 34
+    name: "tlačítko 3"
+    filters:
+      - invert:
+
+output:
+  - platform: ledc
+    pin: 33
+    frequency: 19531Hz
+    id: LED_channel_1
+  - platform: ledc
+    pin: 32
+    frequency: 19531Hz
+    id: LED_channel_2
+  - platform: ledc
+    pin: 12
+    frequency: 19531Hz
+    id: LED_channel_3
+  - platform: ledc
+    pin: 4
+    frequency: 19531Hz
+    id: LED_channel_4
+  - platform: ledc
+    pin: 2
+    frequency: 19531Hz
+    id: LED_channel_5
+
+  - platform: template
+    id: LED_channel_1_3
+    type: float
+    write_action:
+      - output.set_level:
+          id: LED_channel_1
+          level: !lambda return state;
+      - output.set_level:
+          id: LED_channel_3
+          level: !lambda return state;
+
+  - platform: template
+    id: LED_channel_2_4
+    type: float
+    write_action:
+      - output.set_level:
+          id: LED_channel_2
+          level: !lambda return state;
+      - output.set_level:
+          id: LED_channel_4
+          level: !lambda return state;
+
+light:
+  - platform: cwww
+    name: "světlo"
+    icon: mdi:led-strip-variant
+    cold_white: LED_channel_1_3
+    warm_white: LED_channel_2_4
+    cold_white_color_temperature: ${cold_white_color_temperature}
+    warm_white_color_temperature: ${warm_white_color_temperature}
+    # Koriguje minimální jas, čím vyšší hodnota tim menší minimalní jas
+    gamma_correct: 1.2
+    constant_brightness: true
+    restore_mode: ALWAYS_ON
+
+button:
+  - platform: template
+    name: "plný jas"
+    icon: mdi:weather-sunny-alert
+    on_press:
+      - output.set_level:
+          id: LED_channel_1_3
+          level: 100%
+      - output.set_level:
+          id: LED_channel_2_4
+          level: 100%
+
+
