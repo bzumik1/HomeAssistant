@@ -1,0 +1,7 @@
+# Configuration
+substitutions:
+  name: "esp-svetlo-jidelna"
+  friendly_name: "Světlo - jídelna"
+
+packages:
+  penta-mini-template: github://bzumik1/HomeAssistant/EspHome/templates/template-esp-an-penta-mini-wired-single-color.yaml@main
