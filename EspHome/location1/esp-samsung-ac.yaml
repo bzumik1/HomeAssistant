@@ -1,18 +1,12 @@
 substitutions:
-  name: esp-samsung-ac
-  friendly_name: Klimatizace SAMSUNG
+  name: esp-klimatizace
+  friendly_name: Klimatizace
 
 packages:
   common: github://bzumik1/HomeAssistant/EspHome/templates/common.yaml@main
 
 esp32:
   board: m5stack-atom
-
-esp32_improv:
-  authorizer: none
-  wifi_timeout: 5min
-
-
 
 # AC CONFIGURATION  
 uart:
@@ -43,60 +37,62 @@ samsung_ac:
     # BEDROOM
     - address: "20.00.00" # unit address
       error_code:
-        name: "Klimatizace - ložnice error"
+        name: "ložnice error"
 
       # You could use the ESPHome/Homeassist climate control
       climate:
-        name: "Klimatizace - ložnice"
+        name: "ložnice"
 
       # And/or use seperate controls/sensors
-      room_temperature:
-        name: "Klimatizace - ložnice teplota"
-      room_humidity:
-        name: "Klimatizace - ložnice vlhkost"
-      target_temperature:
-        name: "Klimatizace - ložnice požadovaná teplota"
-      power:
-        name: "Klimatizace - ložnice vypínač"
+      # room_temperature:
+      #   name: "ložnice teplota"
+      # room_humidity:
+      #   name: "ložnice vlhkost"
+      # target_temperature:
+      #   name: "ložnice požadovaná teplota"
+      # power:
+      #   name: "ložnice vypínač"
       automatic_cleaning:
-        name: "Klimatizace - ložnice automatické čištění"
-      mode:
-        name: "Klimatizace - ložnice mód"
+        name: "ložnice automatické čištění"
+        icon: mdi:broom
+      # mode:
+      #   name: "ložnice mód"
     
     # LIVING ROOM
     - address: "20.00.01" # unit address
       error_code:
-        name: "Klimatizace - obývák error"
+        name: "obývák error"
 
       # You could use the ESPHome/Homeassist climate control
       climate:
-        name: "Klimatizace - obývák"
+        name: "obývák"
 
       # And/or use seperate controls/sensors
-      room_temperature:
-        name: "Klimatizace - obývák teplota"
-      room_humidity:
-        name: "Klimatizace - obývák vlhkost"
-      target_temperature:
-        name: "Klimatizace - obývák požadovaná teplota"
-      power:
-        name: "Klimatizace - obývák vypínač"
+      # room_temperature:
+      #   name: "obývák teplota"
+      # room_humidity:
+      #   name: "obývák vlhkost"
+      # target_temperature:
+      #   name: "obývák požadovaná teplota"
+      # power:
+      #   name: "obývák vypínač"
       automatic_cleaning:
-        name: "Klimatizace - obývák automatické čištění"
-      mode:
-        name: "Klimatizace - obývák mód"
+        name: "obývák automatické čištění"
+        icon: mdi:broom
+      # mode:
+      #   name: "obývák mód"
     
     # OUTDOOR UNIT
     - address: "10.00.00"
       error_code:
-        name: "Klimatizace - venkovní jednotka error"
+        name: "venkovní jednotka error"
       outdoor_temperature:
-        name: "Klimatizace - venkovní teplota"
+        name: "venkovní teplota"
       outdoor_instantaneous_power:
-        name: "Klimatizace - výkon"
+        name: "aktuální výkon"
       outdoor_cumulative_energy:
-        name: "Klimatizace - spotřeba"
+        name: "celková spotřeba"
       outdoor_current:
-        name: "Klimatizace - proud"
+        name: "proud"
       outdoor_voltage:
-        name: "Klimatizace - napětí"
+        name: "napětí"
