@@ -202,9 +202,7 @@ fan:
 sensor:
   - platform: template
     icon: mdi:fan
-    entity_category: diagnostic
     name: "Ventilátor přívod vzduchu"
-    id: dac1_sensor
     unit_of_measurement: "%"
     accuracy_decimals: 0
     lambda: |-
@@ -213,11 +211,19 @@ sensor:
 
   - platform: template
     icon: mdi:fan
-    entity_category: diagnostic
     name: "Ventilátor odvod vzduchu"
-    id: dac2_sensor
     unit_of_measurement: "%"
     accuracy_decimals: 0
     lambda: |-
       return id(dac2_level) * 100.0;
+    update_interval: 1s
+  
+  - platform: template
+    icon: mdi:air-filter
+    name: "Průtok vzduchu"
+    id: dac2_sensor
+    unit_of_measurement: "m3/h"
+    accuracy_decimals: 0
+    lambda: |-
+      return ${max_airflow}*(id(hrv_fun).speed)/100;
     update_interval: 1s
