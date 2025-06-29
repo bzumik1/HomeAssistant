@@ -3,5 +3,6 @@ substitutions:
   name: esp-rekuperace
   friendly_name: Rekuperace
   max_airflow: "600"
+  short_boost_time: "10s"
 
 <<: !include ../templates/template-esp-hrv.yaml

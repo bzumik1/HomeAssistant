@@ -14,6 +14,14 @@ globals:
   - id: dac2_level
     type: float
     initial_value: '0.0'
+  - id: fan_speed_memory
+    type: int
+    initial_value: '0'
+  - id: fan_preset_memory
+    type: std::string
+    initial_value: '"AUTO"'
+  - id: boost_active
+    type: boolean
 
 # Enable logging
 logger:
@@ -196,8 +204,15 @@ fan:
     restore_mode: RESTORE_DEFAULT_ON
     preset_modes:
       - "AUTO"
-      - "MANUAL"
       - "BOOST"
+    on_speed_set:
+      - script.execute: boost_reset
+    on_preset_set:
+      - if:
+          condition:
+            lambda: 'return x == "BOOST";'
+          then:
+            - script.execute: boost_start
 
 sensor:
   - platform: template
@@ -217,6 +232,13 @@ sensor:
     lambda: |-
       return id(dac2_level) * 100.0;
     update_interval: 1s
+
+  - platform: template
+    icon: mdi:fan
+    name: "Boost"
+    lambda: |-
+      return id(boost_active);
+    update_interval: 1s
   
   - platform: template
     icon: mdi:air-filter
@@ -227,3 +249,50 @@ sensor:
     lambda: |-
       return ${max_airflow}*(id(hrv_fun).speed)/100;
     update_interval: 1s
+
+button:
+  - platform: template
+    name: "BOOST 15min"
+    icon: mdi:fan-chevron-up
+    on_press:
+      - script.execute: boost_start
+
+script:
+  - id: boost_start
+    mode: restart
+    then:
+      - lambda: |-
+          if (id(boost_active) == false) {
+            id(fan_speed_memory) = id(hrv_fun).speed;
+            id(fan_preset_memory) = id(hrv_fun).preset_mode.c_str();
+            ESP_LOGD("custom", "Ukládám si předchozí stav ventilátoru: rychlost=%d, preset=%s", id(fan_speed_memory), id(fan_preset_memory).c_str());
+          }
+          auto call = id(hrv_fun).turn_on();
+          call.set_speed(100);
+          call.set_preset_mode("BOOST");
+          call.perform();
+          id(boost_active) = true;
+      - logger.log: "BOOST mód aktivován na 15 minut"
+      - delay: ${short_boost_time}
+      - lambda: |-
+          id(boost_active) = false;
+      - if:
+          condition:
+            lambda: |-
+                    return (id(hrv_fun).speed == 100);
+          then:
+          - logger.log: "Obnovuji původní stav ventilátoru"
+          - lambda: |-
+              auto call = id(hrv_fun).turn_on();
+              call.set_speed(id(fan_speed_memory));
+              call.set_preset_mode(id(fan_preset_memory).c_str());
+              call.perform();
+
+  - id: boost_reset
+    mode: restart
+    then:
+      - lambda: |-
+          if (id(boost_active) == true) {
+            id(boost_active) = false;
+            id(boost_start)->stop();
+          }
