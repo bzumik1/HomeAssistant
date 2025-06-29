@@ -275,18 +275,11 @@ script:
       - logger.log: "BOOST mód aktivován na 15 minut"
       - delay: ${short_boost_time}
       - lambda: |-
+          auto call = id(hrv_fun).turn_on();
+          call.set_speed(id(fan_speed_memory));
+          call.set_preset_mode(id(fan_preset_memory).c_str());
+          call.perform();
           id(boost_active) = false;
-      - if:
-          condition:
-            lambda: |-
-                    return (id(hrv_fun).speed == 100);
-          then:
-          - logger.log: "Obnovuji původní stav ventilátoru"
-          - lambda: |-
-              auto call = id(hrv_fun).turn_on();
-              call.set_speed(id(fan_speed_memory));
-              call.set_preset_mode(id(fan_preset_memory).c_str());
-              call.perform();
 
   - id: boost_reset
     mode: restart
