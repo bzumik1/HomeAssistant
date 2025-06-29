@@ -4,11 +4,16 @@ packages:
 esp32_improv:
   authorizer: none
 
-# Basic Config
-esphome:
-  platform: ESP32
+esp32:
   board: esp32dev
-  name: ${name}
+
+globals:
+  - id: dac1_level
+    type: float
+    initial_value: '0.0'
+  - id: dac2_level
+    type: float
+    initial_value: '0.0'
 
 # Enable logging
 logger:
@@ -106,11 +111,14 @@ binary_sensor:
 
 number:
   - platform: template
-    name: "${name} disbalance ventilátoru"
+    entity_category: 'config'
+    icon: mdi:fan-plus
+    name: "disbalance ventilátoru"
     id: fan_disbalance
+    unit_of_measurement: "%"
     min_value: -100
     max_value: 100
-    step: 1.0
+    step: 10
     initial_value: 0.0
     restore_value: true
     mode: slider
@@ -123,24 +131,59 @@ number:
             }
 
 output:
+  # Hardware outputs
   - platform: esp32_dac
     pin: GPIO25
-    id: dac1
+    id: dac1_hw
 
   - platform: esp32_dac
     pin: GPIO26
-    id: dac2
+    id: dac2_hw
 
+  # Hardware outputs with output memory
+  - platform: template
+    id: dac1
+    type: float
+    write_action:
+      - globals.set:
+          id: dac1_level
+          value: !lambda 'return state;'
+      - output.set_level:
+          id: dac1_hw
+          level: !lambda 'return state;'
+
+  - platform: template
+    id: dac2
+    type: float
+    write_action:
+      - globals.set:
+          id: dac2_level
+          value: !lambda 'return state;'
+      - output.set_level:
+          id: dac2_hw
+          level: !lambda 'return state;'
+
+  # Common output for the fan
   - platform: template
     id: dual_fan_output
     type: float
     write_action:
       - lambda: |-
           float disbalance_value = id(fan_disbalance).state / 100.0;
-          float intake_level = state * (1.0 - disbalance_value);
-          float exhaust_level = state * (1.0 + disbalance_value);
+          float intake_level;
+          float exhaust_level;
+
+          if (disbalance_value > 0) {
+              intake_level = state * (1.0 - disbalance_value);
+              exhaust_level = state;
+          } else {
+              intake_level = state;
+              exhaust_level = state * (1.0 + disbalance_value);
+          }
+
           id(dac1).set_level(intake_level);
           id(dac2).set_level(exhaust_level);
+
           ESP_LOGD("custom", "Nastavuji dac1 (přívod) na hodnotu: %f", intake_level);
           ESP_LOGD("custom", "Nastavuji dac2 (odtah) na hodnotu: %f", exhaust_level);
 
@@ -148,19 +191,33 @@ fan:
   - platform: speed
     speed_count: 100
     output: dual_fan_output
-    name: "${name} ventilátor "
+    name: "Ventilátor"
     id: hrv_fun
     restore_mode: RESTORE_DEFAULT_ON
     preset_modes:
       - "AUTO"
       - "MANUAL"
       - "BOOST"
-    on_preset_set:
-      then:
-        - lambda: |-
-            if (id(hrv_fun).preset_mode == "BOOST") {
-              id(hrv_fun).turn_on().set_speed(1.0).perform();  // Zapněte ventilátor na plný výkon
-              ESPHome::Scheduler::shared_instance().set_timeout(15 * 60 * 1000, []() {
-                id(hrv_fun).turn_off().perform();  // Vypněte ventilátor
-              });
-            }
+
+sensor:
+  - platform: template
+    icon: mdi:fan
+    entity_category: diagnostic
+    name: "Ventilátor přívod vzduchu"
+    id: dac1_sensor
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    lambda: |-
+      return id(dac1_level) * 100.0;
+    update_interval: 1s
+
+  - platform: template
+    icon: mdi:fan
+    entity_category: diagnostic
+    name: "Ventilátor odvod vzduchu"
+    id: dac2_sensor
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    lambda: |-
+      return id(dac2_level) * 100.0;
+    update_interval: 1s

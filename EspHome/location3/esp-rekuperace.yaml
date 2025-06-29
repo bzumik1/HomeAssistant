@@ -1,5 +1,6 @@
 # Configuration
 substitutions:
   name: esp-rekuperace
+  friendly_name: Rekuperace
 
-<<: !include templates/template-esp-hrv.yaml
+<<: !include ../templates/template-esp-hrv.yaml
