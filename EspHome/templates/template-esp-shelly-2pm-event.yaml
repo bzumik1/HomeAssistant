@@ -11,7 +11,7 @@ esp32_improv:
 esp32:
   board: esp32doit-devkit-v1
   framework:
-    type: arduino
+    type: esp-idf
 
 i2c:
   sda: GPIO26
