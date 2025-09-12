@@ -55,6 +55,27 @@ binary_sensor:
         then:
           - light.toggle: monochromatic_light
 
+      # Double press
+      - timing:
+        - ON for at most 400ms
+        - OFF for at most 200ms
+        - ON for at most 400ms
+        - OFF for at least 200ms
+        then:
+          - homeassistant.event:
+              event: esphome.${name}_switch3_double_press
+
+      # Long press
+      - timing:
+        - ON for at least 500ms
+        then:
+          - lambda: |-
+              if (id(monochromatic_light).current_values.is_on() && id(monochromatic_light).current_values.get_brightness() > 0.99f) {
+                id(monochromatic_light).turn_on().set_brightness(0.01f).perform();
+              } else {
+                id(monochromatic_light).turn_on().set_brightness(1.0f).perform();
+              }
+
 
 output:
   - platform: ledc
