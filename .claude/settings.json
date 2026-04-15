@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(EspHome/secrets.yaml)",
+      "Grep(EspHome/secrets.yaml)",
+      "Edit(EspHome/secrets.yaml)",
+      "Write(EspHome/secrets.yaml)"
+    ]
+  }
+}
