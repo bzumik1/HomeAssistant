@@ -1,5 +1,5 @@
 # Ignore local context files
-locations.md
+CLAUDE.local.md
 
 # Ignore all secrets.yaml files
 **/secrets.yaml
