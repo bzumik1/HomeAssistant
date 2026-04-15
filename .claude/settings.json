@@ -6,5 +6,18 @@
       "Edit(**/secrets.yaml)",
       "Write(**/secrets.yaml)"
     ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/validate-esphome.sh"
+          }
+        ]
+      }
+    ]
   }
 }
