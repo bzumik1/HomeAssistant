@@ -1,3 +1,6 @@
+# Ignore local context files
+locations.md
+
 # Ignore all secrets.yaml files
 **/secrets.yaml
 
