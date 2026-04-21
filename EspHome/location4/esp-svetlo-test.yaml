@@ -1,0 +1,9 @@
+# Configuration
+substitutions:
+  name: "esp-svetlo-test"
+  friendly_name: "Světlo - test"
+  cold_white_color_temperature: "6500 K"
+  warm_white_color_temperature: "2200 K"
+
+packages:
+  penta-mini-template: !include ../templates/template-esp-an-penta-mini-wireless.yaml
