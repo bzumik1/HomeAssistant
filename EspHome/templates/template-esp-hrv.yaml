@@ -26,6 +26,26 @@ globals:
 # Enable logging
 logger:
 
+# RSR85 bus
+uart:
+  - id: rs485
+    tx_pin: GPIO27
+    rx_pin: GPIO14
+    baud_rate: 9600
+
+# Modbus
+modbus:
+  id: modbus1
+  uart_id: rs485
+
+# Modbus devices
+modbus_controller:
+- id: sensor1
+  update_interval: 1s
+  address: 10
+  modbus_id: modbus1
+  setup_priority: -10
+
 # Relays are connected trough I2C
 i2c:
   sda: 4
@@ -249,6 +269,29 @@ sensor:
     lambda: |-
       return ${max_airflow}*(id(hrv_fun).speed)/100;
     update_interval: 1s
+
+# Modbus sensors
+  - platform: modbus_controller
+    modbus_controller_id: sensor1
+    name: "Senzor 1 - teplota"
+    device_class: temperature
+    register_type: read
+    address: 1
+    value_type: S_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+      
+  - platform: modbus_controller
+    modbus_controller_id: sensor1
+    name: "Senzor 1 - vlhkost"
+    device_class: humidity
+    register_type: read
+    address: 2
+    value_type: S_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
 
 button:
   - platform: template
