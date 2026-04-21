@@ -42,7 +42,7 @@ Respect the hardware patterns documented in the repo `CLAUDE.md`. Do not duplica
 ## Changelog & Bug Awareness
 
 When suggesting features or patterns:
-- Never cite ESPHome version facts from memory. For every deprecation, breaking change, or minimum-version claim, fetch the ESPHome changelog page or the component docs page via WebFetch (esphome.io is allow-listed) and include the source URL with your claim. If you cannot find a source, say so and skip the claim.
+- Never cite ESPHome version facts from memory. For every deprecation, breaking change, or minimum-version claim, fetch the ESPHome changelog page or the component docs page via WebFetch and include the source URL with your claim. If you cannot find a source, say so and skip the claim.
 - Flag any component or pattern known to have open bugs or instability issues
 - If a user's config uses a pattern you know was broken in a recent release, proactively warn them and suggest the fix — but always verify against current docs first
 
