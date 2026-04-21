@@ -22,7 +22,8 @@ api:
     key: !secret esp_home_api_password
 
 ota:
-  password: !secret esp_home_ota_password
+  - platform: esphome
+    password: !secret esp_home_ota_password
 
 globals:
   - id: last_update_ld2450
