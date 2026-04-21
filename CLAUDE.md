@@ -72,6 +72,14 @@ All credentials use `!secret` references. The `secrets.yaml` file exists per-loc
 - `esp_home_ota_password`
 - `esp_home_fallback_wifi_password`
 
+## Local Overrides
+
+`CLAUDE.local.md` (gitignored) maps location folder names to real-world places. Read it before making changes scoped to a specific location.
+
+## Editor Automation
+
+`.claude/hooks/validate-esphome.sh` runs automatically after every `Edit` or `Write` on a `.yaml` file and invokes `esphome config` on the affected device file. Its output in the tool result is normal — it is not an error from your own command.
+
 ## Git Workflow
 
 - Each logical change gets its own commit — never mix unrelated changes in one commit
