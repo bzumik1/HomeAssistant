@@ -75,11 +75,12 @@ text_sensor:
 
 binary_sensor:
   - platform: gpio
-    name: "${name} vypínač"
-    pin: GPIO4
-    on_press:
-      then:
-        - switch.toggle: "relay"
+    name: "${name} stav vrat"
+    device_class: garage_door
+    icon: mdi:garage-alert-variant
+    pin:
+      number: GPIO4
+      inverted: true
     filters:
       - delayed_on_off: 50ms
   
@@ -130,13 +131,13 @@ sensor:
   - platform: adc
     id: temp_analog_reading
     pin: GPIO32
-    attenuation: 11db
+    attenuation: 12db
 
   - platform: adc
     name: "${name} napětí zdroje relé"
     entity_category: diagnostic
     pin: GPIO33
-    attenuation: 11db
+    attenuation: 12db
     filters:
       - multiply: 8
 

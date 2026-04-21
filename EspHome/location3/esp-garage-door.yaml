@@ -130,13 +130,13 @@ sensor:
   - platform: adc
     id: temp_analog_reading
     pin: GPIO32
-    attenuation: 11db
+    attenuation: 12db
 
   - platform: adc
     name: "${name} napětí zdroje relé"
     entity_category: diagnostic
     pin: GPIO33
-    attenuation: 11db
+    attenuation: 12db
     filters:
       - multiply: 8
 
