@@ -5,6 +5,7 @@
       "WebSearch",
       "Bash(esphome config *)",
       "Bash(esphome compile *)",
+      "Bash(esphome logs *)",
       "Bash(esphome version)"
     ],
     "deny": [
