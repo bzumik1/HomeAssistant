@@ -31,10 +31,22 @@ sensor:
     accuracy_decimals: 2
     update_interval: 30s
 
+  - platform: homeassistant
+    id: ha_brightness2
+    entity_id: switch.adaptive_lighting_test
+    attribute: brightness_pct
+    internal: true
+    on_value:
+      - lambda: |-
+          ESP_LOGI("main", "Hodnota jasu 2 je %.1f %%", x);
+
 number:
   - platform: homeassistant
     id: ha_brightness
     entity_id: input_number.jas_svetla
+    on_value:
+      - lambda: |-
+          ESP_LOGI("main", "Hodnota jasu 1 je %.1f %%", x);
     
 binary_sensor:
   - platform: gpio
