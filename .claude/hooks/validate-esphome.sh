@@ -13,7 +13,7 @@ FILE=$(cat | python3 -c "import sys, json; d=json.load(sys.stdin); print(d.get('
 
 if [[ "$FILE" == */templates/* ]]; then
     TEMPLATE_NAME=$(basename "$FILE")
-    DEVICE_FILE=$(grep -rl "$TEMPLATE_NAME" "$(dirname "$FILE")/.." --include="*.yaml" | grep -v '/templates/' | head -1)
+    DEVICE_FILE=$(grep -rlF "$TEMPLATE_NAME" "$(dirname "$FILE")/.." --include="*.yaml" | grep -v '/templates/' | head -1)
     if [[ -z "$DEVICE_FILE" ]]; then
         echo "No device file references $TEMPLATE_NAME, skipping validation" >&2
         exit 0
