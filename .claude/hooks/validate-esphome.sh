@@ -1,6 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
+if ! command -v python3 >/dev/null 2>&1; then
+    echo "python3 not on PATH, skipping validation" >&2
+    exit 0
+fi
+
 FILE=$(cat | python3 -c "import sys, json; d=json.load(sys.stdin); print(d.get('tool_input', {}).get('file_path', ''))")
 
 [[ "$FILE" != *.yaml ]] && exit 0
