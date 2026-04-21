@@ -1,5 +1,12 @@
 {
   "permissions": {
+    "allow": [
+      "WebFetch(*)",
+      "WebSearch",
+      "Bash(esphome config *)",
+      "Bash(esphome compile *)",
+      "Bash(esphome version)"
+    ],
     "deny": [
       "Read(**/secrets.yaml)",
       "Grep(**/secrets.yaml)",
