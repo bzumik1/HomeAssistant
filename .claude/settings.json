@@ -4,7 +4,8 @@
       "Read(**/secrets.yaml)",
       "Grep(**/secrets.yaml)",
       "Edit(**/secrets.yaml)",
-      "Write(**/secrets.yaml)"
+      "Write(**/secrets.yaml)",
+      "Bash(*secrets.yaml*)"
     ]
   },
   "hooks": {
