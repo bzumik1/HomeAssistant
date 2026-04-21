@@ -1,0 +1,46 @@
+blueprint:
+  name: Upozornění na vypnutá polohová oprávnění
+  description: Odesílá akci a uchovává seznam entit bez povolení polohových dat.
+  domain: automation
+  input:
+    trigger_action:
+      name: Akce při vypnutí polohových oprávnění
+      description: Vyberte akci, která se má vykonat, pokud některé zařízení nemá povolena polohová data.
+      selector:
+        action: {}
+
+    notify_time:
+      name: Čas denního upozornění
+      description: Kdy má být odesláno pravidelné denní upozornění.
+      default: "21:00:00"
+      selector:
+        time: {}
+
+variables:
+  devices: >-
+    {% set ns = namespace(devices=[]) %}
+    {% for entity in integration_entities('mobile_app') %}
+      {% if state_attr(entity, 'location_permission') != 'Authorized Always' %}
+        {% set ns.devices = ns.devices + [entity] %}
+      {% endif %}
+    {% endfor %}
+    {{ ns.devices }}
+
+triggers:
+  - trigger: template
+    value_template: >-
+      {{ integration_entities('mobile_app') | select('search', 'location_permission') 
+      | map(attribute='state') | reject('eq', 'Authorized Always') | list | count > 0 }}
+  - trigger: time
+    at: !input notify_time
+
+condition:
+  - condition: template
+    value_template: >-
+      {{ integration_entities('mobile_app') | select('search', 'location_permission') 
+      | map(attribute='state') | reject('eq', 'Authorized Always') | list | count > 0 }}
+
+action:
+  - !input trigger_action
+
+mode: single
