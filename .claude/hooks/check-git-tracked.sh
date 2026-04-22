@@ -13,7 +13,7 @@
 set -euo pipefail
 
 INPUT=$(cat)
-COMMAND=$(echo "$INPUT" | python3 -c "
+COMMAND=$(printf '%s' "$INPUT" | python3 -c "
 import sys, json
 d = json.load(sys.stdin)
 print(d.get('tool_input', {}).get('command', ''))
@@ -72,7 +72,7 @@ if echo "$COMMAND" | grep -qE '(^|[[:space:];&|])mv[[:space:]]'; then
     while IFS= read -r FILE; do
         [[ -z "$FILE" ]] && continue
         if check_git_tracked "$FILE"; then
-            echo "BLOCKED: '$FILE' is tracked by git. Use 'git mv $FILE <destination>' instead of 'mv' to preserve history."
+            echo "BLOCKED: '$FILE' is tracked by git. Use 'git mv $FILE <destination>' instead of 'mv' to preserve history." >&2
             exit 2
         fi
     done <<< "$SOURCES"
@@ -84,7 +84,7 @@ if echo "$COMMAND" | grep -qE '(^|[[:space:];&|])rm[[:space:]]'; then
     while IFS= read -r FILE; do
         [[ -z "$FILE" ]] && continue
         if check_git_tracked "$FILE"; then
-            echo "BLOCKED: '$FILE' is tracked by git. Use 'git rm $FILE' instead of 'rm'. Add --cached to keep the local file."
+            echo "BLOCKED: '$FILE' is tracked by git. Use 'git rm $FILE' instead of 'rm'. Add --cached to keep the local file." >&2
             exit 2
         fi
     done <<< "$FILES"
