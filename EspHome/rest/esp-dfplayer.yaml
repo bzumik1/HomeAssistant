@@ -4,8 +4,6 @@ substitutions:
 
 esphome:
   name: hasici
-  platform: ESP32
-  board: esp32-c3-devkitm-1
   on_boot:
     priority: -100
     then:
@@ -13,6 +11,11 @@ esphome:
             auto volume = 3*id(player_volume).state;
             id(player).set_volume(volume);
             ESP_LOGI("Boot", "Nastavuji hlasitost při startu na: %u", volume);
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
 
 wifi:
   ssid: !secret wifi_ssid
