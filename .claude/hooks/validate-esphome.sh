@@ -17,6 +17,7 @@ except Exception:
 
 [[ "$FILE" != *.yaml ]] && exit 0
 [[ "$FILE" == *secrets.yaml ]] && exit 0
+[[ "$FILE" == */Blueprints/* ]] && exit 0
 
 if [[ "$FILE" == */templates/* ]]; then
     TEMPLATE_NAME=$(basename "$FILE")
