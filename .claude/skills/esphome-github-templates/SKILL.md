@@ -1,5 +1,5 @@
 ---
-name: esphome-use-github-templates
+name: esphome-github-templates
 description: Switches local !include template references in ESPHome device configs back to github:// paths. Used after local testing is done and changes to shared templates have been committed.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: esphome-compatibility-review
+name: esphome-audit
 description: Reviews ESPHome configs in this repo for compatibility issues with newer ESPHome versions. For each potential issue found, looks up the official documentation and presents findings to the user for approval before making any changes.
 ---
 

@@ -85,6 +85,7 @@ All credentials use `!secret` references. The `secrets.yaml` file exists per-loc
 - Each logical change gets its own commit — never mix unrelated changes in one commit
 - Before staging, always run `git diff` for the affected files and confirm the diff contains only the intended changes, not pre-existing unrelated modifications
 - If a file contains both intended changes and pre-existing unrelated work, stage only the relevant hunks or commit them separately
+- When renaming or moving files or directories, always use `git mv` instead of `mv` to preserve history
 
 ## Language
 

@@ -1,5 +1,5 @@
 ---
-name: esphome-use-local-templates
+name: esphome-local-templates
 description: Switches github:// template references in ESPHome device configs to local !include paths. Used for local testing before committing changes to the shared github templates.
 ---
 
