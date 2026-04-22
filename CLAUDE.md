@@ -8,42 +8,11 @@ This is an ESPHome configuration repository for a multi-location smart home setu
 
 ## ESPHome CLI Commands
 
-Work is done from within a location directory (e.g. `EspHome/location1/`):
-
-```bash
-# Validate a config without compiling
-esphome config esp-svetlo-jidelna.yaml
-
-# Compile firmware
-esphome compile esp-svetlo-jidelna.yaml
-
-# Compile and flash over the network (OTA)
-esphome run esp-svetlo-jidelna.yaml
-
-# Flash via USB
-esphome upload esp-svetlo-jidelna.yaml --device /dev/ttyUSB0
-
-# View live logs from a device
-esphome logs esp-svetlo-jidelna.yaml
-```
+Use `esphome config/compile/run/upload/logs <file.yaml>` from within a location directory (e.g. `location1/`).
 
 ## Repository Structure
 
-```
-EspHome/
-  secrets.yaml          # Root-level secrets (gitignored)
-  templates/
-    common.yaml         # Shared base config included by most devices (WiFi, API, OTA, sensors)
-    template-esp-*.yaml # Reusable hardware-specific templates
-  components/
-    ld2450_uart.h       # Custom C++ component for LD2450 radar sensor (UART-based)
-  location1/            # Apartment / primary residence
-  location2/            # Secondary location (garage door, doorbell, power monitor)
-  location3/            # Location with many Sonoff Dual R3 switches + HRV unit
-  location4/            # Test/new devices
-  rest/                 # Standalone device configs (Shelly, switches, relays)
-Blueprints/             # Home Assistant automation blueprints (YAML)
-```
+Configs live in `location1-4/` directories. Shared base config in `templates/` (`common.yaml` + hardware-specific templates). Custom C++ components in `components/` (e.g. `ld2450_uart.h` for LD2450 radar). Standalone device configs in `rest/` (Shelly, switches, relays). Home Assistant automations in `Blueprints/`. Secrets in root-level and per-location `secrets.yaml` (gitignored).
 
 ## Architecture: Packages & Templates
 
