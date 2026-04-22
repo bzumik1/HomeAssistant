@@ -37,16 +37,18 @@ fields:
 
 variables:
   _media_player: !input media_player
+  _scene_id: "tts_snapshot_{{ context.id }}"
 
 mode: queued
 max: 3
+max_exceeded: warning
 icon: mdi:speaker-message
 
 sequence:
   - alias: Uložení hlasitosti jako dočasné scény
     action: scene.create
     data:
-      scene_id: temp_speaker_scene
+      scene_id: "{{ _scene_id }}"
       snapshot_entities:
         - !input media_player
   - if:
@@ -62,7 +64,10 @@ sequence:
         wait_for_trigger:
           - trigger: state
             entity_id: !input media_player
-            from: playing
+            to:
+              - "paused"
+              - "idle"
+              - "off"
         timeout: "00:00:10"
         continue_on_timeout: true
   - alias: Nastavení hlasitosti
@@ -78,8 +83,15 @@ sequence:
       message: "{{ message }}"
     target:
       entity_id: !input tts_engine
-  - delay:
-      seconds: 2
+  - alias: Čekání na start přehrávání
+    wait_for_trigger:
+      - trigger: state
+        entity_id: !input media_player
+        to:
+          - "playing"
+          - "buffering"
+    timeout: "00:00:15"
+    continue_on_timeout: true
   - alias: Čekání na dokončení přehrávání
     wait_for_trigger:
       - trigger: template
@@ -90,9 +102,5 @@ sequence:
     continue_on_timeout: true
   - alias: Obnovení původní hlasitosti
     action: scene.turn_on
-    data:
-      entity_id: scene.temp_speaker_scene
-  - alias: Odstranění dočasné scény
-    action: scene.delete
-    data:
-      entity_id: scene.temp_speaker_scene
+    target:
+      entity_id: "scene.{{ _scene_id }}"
