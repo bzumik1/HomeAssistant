@@ -455,7 +455,7 @@ sensor:
         name: Vzdálenost detekovaného objektu
         entity_category: diagnostic
   
-  - platform: bmp280
+  - platform: bmp280_i2c
     address: 0x76
     update_interval: 60s
     temperature:
