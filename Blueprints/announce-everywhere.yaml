@@ -1,0 +1,98 @@
+blueprint:
+  name: Ohlas všude
+  description: Ohlas zprávu na zvoleném přehrávači s automatickým nastavením hlasitosti a obnovením původního stavu.
+  domain: script
+  input:
+    tts_engine:
+      name: TTS engine
+      description: Entita TTS poskytovatele (např. tts.google_cloud, tts.google_translate)
+      selector:
+        entity:
+          domain: tts
+    media_player:
+      name: Přehrávač
+      description: Media player, na kterém se zpráva přehraje
+      selector:
+        entity:
+          domain: media_player
+    volume_level:
+      name: Hlasitost
+      description: Hlasitost pro přehrání zprávy (0.0–1.0)
+      default: 0.7
+      selector:
+        number:
+          min: 0.0
+          max: 1.0
+          step: 0.05
+          mode: slider
+
+fields:
+  message:
+    name: Zpráva
+    description: Text ke přečtení
+    required: true
+    example: "Pozor, někdo zazvonil."
+    selector:
+      text:
+
+variables:
+  _media_player: !input media_player
+
+mode: queued
+max: 3
+icon: mdi:speaker-message
+
+sequence:
+  - alias: Uložení hlasitosti jako dočasné scény
+    action: scene.create
+    data:
+      scene_id: temp_speaker_scene
+      snapshot_entities:
+        - !input media_player
+  - if:
+      - condition: state
+        entity_id: !input media_player
+        state: playing
+    then:
+      - alias: Pozastavení aktuální hudby
+        action: media_player.media_pause
+        target:
+          entity_id: !input media_player
+      - alias: Čekání na zastavení přehrávání
+        wait_for_trigger:
+          - trigger: state
+            entity_id: !input media_player
+            from: playing
+        timeout: "00:00:10"
+        continue_on_timeout: true
+  - alias: Nastavení hlasitosti
+    action: media_player.volume_set
+    target:
+      entity_id: !input media_player
+    data:
+      volume_level: !input volume_level
+  - action: tts.speak
+    data:
+      cache: true
+      media_player_entity_id: !input media_player
+      message: "{{ message }}"
+    target:
+      entity_id: !input tts_engine
+  - delay:
+      seconds: 2
+  - alias: Čekání na dokončení přehrávání
+    wait_for_trigger:
+      - trigger: template
+        value_template: >
+          {{ not is_state(_media_player, 'playing') and not
+          is_state(_media_player, 'buffering') }}
+    timeout: "00:10:00"
+    continue_on_timeout: true
+  - alias: Obnovení původní hlasitosti
+    action: scene.turn_on
+    data:
+      entity_id: scene.temp_speaker_scene
+  - alias: Odstranění dočasné scény
+    action: scene.delete
+    data:
+      entity_id: scene.temp_speaker_scene
