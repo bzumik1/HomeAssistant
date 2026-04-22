@@ -37,7 +37,7 @@ fields:
 
 variables:
   _media_player: !input media_player
-  _scene_id: "tts_snapshot_{{ context.id }}"
+  _scene_id: "tts_snapshot_{{ this.context.id | lower }}"
 
 mode: queued
 max: 3
