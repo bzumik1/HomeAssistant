@@ -9,7 +9,10 @@
       "Bash(esphome config *)",
       "Bash(esphome compile *)",
       "Bash(esphome logs *)",
-      "Bash(esphome version)"
+      "Bash(esphome version)",
+      "Bash(git -C * diff*)",
+      "Bash(git -C * status*)",
+      "Bash(git -C * ls-files*)"
     ],
     "deny": [
       "Read(**/secrets.yaml)",
