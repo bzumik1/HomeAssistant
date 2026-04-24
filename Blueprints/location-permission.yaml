@@ -1,7 +1,12 @@
 blueprint:
   name: Upozornění na vypnutá polohová oprávnění
-  description: Odesílá akci a uchovává seznam entit bez povolení polohových dat.
+  description: >-
+    Odesílá akci a uchovává seznam zařízení bez povolení polohových dat.
+    Funguje pouze pro iOS zařízení (sensor.location_permission je iOS-only).
   domain: automation
+  author: Jakub Znamenáček
+  homeassistant:
+    min_version: "2024.10.0"
   input:
     trigger_action:
       name: Akce při vypnutí polohových oprávnění
@@ -19,8 +24,9 @@ blueprint:
 variables:
   devices: >-
     {% set ns = namespace(devices=[]) %}
+    {% set ignored_states = ['Authorized Always', 'unavailable', 'unknown'] %}
     {% for entity in integration_entities('mobile_app') | select('search', 'location_permission') %}
-      {% if states(entity) != 'Authorized Always' %}
+      {% if states(entity) not in ignored_states %}
         {% set name = device_attr(device_id(entity), 'name_by_user') or device_attr(device_id(entity), 'name') %}
         {% set ns.devices = ns.devices + [name] %}
       {% endif %}
@@ -31,17 +37,19 @@ triggers:
   - trigger: template
     value_template: >-
       {{ integration_entities('mobile_app') | select('search', 'location_permission')
-      | map('states') | reject('eq', 'Authorized Always') | list | count > 0 }}
+      | map('states') | reject('eq', 'Authorized Always')
+      | reject('eq', 'unavailable') | reject('eq', 'unknown') | list | count > 0 }}
     for: "00:00:30"
   - trigger: time
     at: !input notify_time
 
-condition:
+conditions:
   - condition: template
     value_template: >-
       {{ integration_entities('mobile_app') | select('search', 'location_permission')
-      | map('states') | reject('eq', 'Authorized Always') | list | count > 0 }}
+      | map('states') | reject('eq', 'Authorized Always')
+      | reject('eq', 'unavailable') | reject('eq', 'unknown') | list | count > 0 }}
 
-action: !input trigger_action
+actions: !input trigger_action
 
-mode: queued
+mode: single
