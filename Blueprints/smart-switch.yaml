@@ -1,0 +1,166 @@
+blueprint:
+  name: Smart switch
+  description: Control lights with two buttons from an ESPHome device. Each button can control different actions like toggle, color change, or brightness adjustment.
+  domain: automation
+  input:
+    esphome_device:
+      name: ESPHome Device Name
+      description: The name of your ESPHome device as configured in ESPHome.
+      selector:
+        text:
+
+    light_entity_1:
+      name: Light Entity 1
+      description: First light to control.
+      selector:
+        entity:
+          domain: light
+
+    light_entity_2:
+      name: Light Entity 2
+      description: Second light to control.
+      selector:
+        entity:
+          domain: light
+
+trigger_variables:
+  esphome_device_name: !input "esphome_device"
+
+trigger:
+  - platform: event
+    event_type: "esphome.{{esphome_device_name}}_switch1_single_press"
+    id: switch1_single_press
+  - platform: event
+    event_type: "esphome.{{esphome_device_name}}_switch1_double_press"
+    id: switch1_double_press
+  - platform: event
+    event_type: "esphome.{{esphome_device_name}}_switch1_long_press"
+    id: switch1_long_press
+
+  - platform: event
+    event_type: "esphome.{{esphome_device_name}}_switch2_single_press"
+    id: switch2_single_press
+  - platform: event
+    event_type: "esphome.{{esphome_device_name}}_switch2_double_press"
+    id: switch2_double_press
+  - platform: event
+    event_type: "esphome.{{esphome_device_name}}_switch2_long_press"
+    id: switch2_long_press
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: switch1_single_press
+        sequence:
+          - service: light.toggle
+            data:
+              transition: 1
+              color_temp_kelvin: "{{ states('input_number.teplota_svetla') | int }}"
+              brightness_pct: "{{ states('input_number.jas_svetla') | int }}"
+            target:
+              entity_id: !input "light_entity_1"
+
+      - conditions:
+          - condition: trigger
+            id: switch1_double_press
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: numeric_state
+                    entity_id: input_number.teplota_svetla
+                    above: 4000
+                  - condition: numeric_state
+                    entity_id: input_number.jas_svetla
+                    above: 50
+                sequence:
+                  - service: script.svetla_nocni_rezim
+            default:
+              - service: script.svetla_denni_rezim
+
+      - conditions:
+          - condition: trigger
+            id: switch1_long_press
+        sequence:
+          - if:
+              - condition: or
+                conditions:
+                  - condition: numeric_state
+                    entity_id: !input "light_entity_1"
+                    attribute: brightness
+                    below: 250
+                  - condition: state
+                    entity_id: !input "light_entity_1"
+                    state: "off"
+            then:
+              - service: light.turn_on
+                data:
+                  brightness_pct: 100
+                  color_temp_kelvin: "{{ states('input_number.teplota_svetla') | int }}"
+                target:
+                  entity_id: !input "light_entity_1"
+            else:
+              - service: light.turn_on
+                data:
+                  brightness_pct: 1
+                  color_temp_kelvin: "{{ states('input_number.teplota_svetla') | int }}"
+                target:
+                  entity_id: !input "light_entity_1"
+
+      - conditions:
+          - condition: trigger
+            id: switch2_single_press
+        sequence:
+          - service: light.toggle
+            data:
+              transition: 1
+              color_temp_kelvin: "{{ states('input_number.teplota_svetla') | int }}"
+              brightness_pct: "{{ states('input_number.jas_svetla') | int }}"
+            target:
+              entity_id: !input "light_entity_2"
+
+      - conditions:
+          - condition: trigger
+            id: switch2_double_press
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: numeric_state
+                    entity_id: input_number.teplota_svetla
+                    above: 4000
+                  - condition: numeric_state
+                    entity_id: input_number.jas_svetla
+                    above: 50
+                sequence:
+                  - service: script.svetla_nocni_rezim
+            default:
+              - service: script.svetla_denni_rezim
+
+      - conditions:
+          - condition: trigger
+            id: switch2_long_press
+        sequence:
+          - if:
+              - condition: or
+                conditions:
+                  - condition: numeric_state
+                    entity_id: !input "light_entity_2"
+                    attribute: brightness
+                    below: 250
+                  - condition: state
+                    entity_id: !input "light_entity_2"
+                    state: "off"
+            then:
+              - service: light.turn_on
+                data:
+                  brightness_pct: 100
+                  color_temp_kelvin: "{{ states('input_number.teplota_svetla') | int }}"
+                target:
+                  entity_id: !input "light_entity_2"
+            else:
+              - service: light.turn_on
+                data:
+                  brightness_pct: 1
+                  color_temp_kelvin: "{{ states('input_number.teplota_svetla') | int }}"
+                target:
+                  entity_id: !input "light_entity_2"
