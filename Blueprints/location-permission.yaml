@@ -45,10 +45,7 @@ triggers:
 
 conditions:
   - condition: template
-    value_template: >-
-      {{ integration_entities('mobile_app') | select('search', 'location_permission')
-      | map('states') | reject('eq', 'Authorized Always')
-      | reject('eq', 'unavailable') | reject('eq', 'unknown') | list | count > 0 }}
+    value_template: "{{ devices | count > 0 }}"
 
 actions: !input trigger_action
 
