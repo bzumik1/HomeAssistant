@@ -21,7 +21,8 @@ variables:
     {% set ns = namespace(devices=[]) %}
     {% for entity in integration_entities('mobile_app') | select('search', 'location_permission') %}
       {% if states(entity) != 'Authorized Always' %}
-        {% set ns.devices = ns.devices + [entity] %}
+        {% set name = device_attr(device_id(entity), 'name_by_user') or device_attr(device_id(entity), 'name') %}
+        {% set ns.devices = ns.devices + [name] %}
       {% endif %}
     {% endfor %}
     {{ ns.devices }}
