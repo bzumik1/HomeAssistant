@@ -42,6 +42,6 @@ condition:
       | map('states') | reject('eq', 'Authorized Always') | list | count > 0 }}
 
 action:
-  - !input trigger_action
+  - sequence: !input trigger_action
 
 mode: queued
