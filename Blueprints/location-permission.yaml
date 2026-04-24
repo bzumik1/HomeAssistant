@@ -41,7 +41,6 @@ condition:
       {{ integration_entities('mobile_app') | select('search', 'location_permission')
       | map('states') | reject('eq', 'Authorized Always') | list | count > 0 }}
 
-action:
-  - sequence: !input trigger_action
+action: !input trigger_action
 
 mode: queued
