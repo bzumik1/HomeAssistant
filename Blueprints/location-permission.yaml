@@ -19,8 +19,8 @@ blueprint:
 variables:
   devices: >-
     {% set ns = namespace(devices=[]) %}
-    {% for entity in integration_entities('mobile_app') %}
-      {% if state_attr(entity, 'location_permission') != 'Authorized Always' %}
+    {% for entity in integration_entities('mobile_app') | select('search', 'location_permission') %}
+      {% if states(entity) != 'Authorized Always' %}
         {% set ns.devices = ns.devices + [entity] %}
       {% endif %}
     {% endfor %}
@@ -29,18 +29,19 @@ variables:
 triggers:
   - trigger: template
     value_template: >-
-      {{ integration_entities('mobile_app') | select('search', 'location_permission') 
-      | map(attribute='state') | reject('eq', 'Authorized Always') | list | count > 0 }}
+      {{ integration_entities('mobile_app') | select('search', 'location_permission')
+      | map('states') | reject('eq', 'Authorized Always') | list | count > 0 }}
+    for: "00:00:30"
   - trigger: time
     at: !input notify_time
 
 condition:
   - condition: template
     value_template: >-
-      {{ integration_entities('mobile_app') | select('search', 'location_permission') 
-      | map(attribute='state') | reject('eq', 'Authorized Always') | list | count > 0 }}
+      {{ integration_entities('mobile_app') | select('search', 'location_permission')
+      | map('states') | reject('eq', 'Authorized Always') | list | count > 0 }}
 
 action:
   - !input trigger_action
 
-mode: single
+mode: queued
