@@ -40,7 +40,7 @@ variables:
   _scene_id: "tts_snapshot_{{ this.context.id | lower }}"
 
 mode: queued
-max: 3
+max: 5
 max_exceeded: warning
 icon: mdi:speaker-message
 
