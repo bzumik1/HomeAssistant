@@ -71,7 +71,7 @@ binary_sensor:
     pin:
       number: GPIO5
     filters:
-      - delayed_on_off: 50ms
+      - delayed_on_off: 20ms
     on_multi_click:
       # Single press
       - timing:
@@ -120,7 +120,7 @@ binary_sensor:
     pin:
       number: GPIO18
     filters:
-      - delayed_on_off: 50ms
+      - delayed_on_off: 20ms
     on_multi_click:
       # Single press
       - timing:
