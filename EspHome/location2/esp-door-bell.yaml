@@ -42,7 +42,9 @@ binary_sensor:
         number: GPIO33
         mode: INPUT_PULLUP
         inverted: true
-      on_click: 
+      filters:
+        - delayed_on_off: 20ms
+      on_click:
         then:
           - homeassistant.service:
               service: script.turn_on
