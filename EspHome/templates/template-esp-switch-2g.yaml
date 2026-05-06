@@ -71,6 +71,8 @@ binary_sensor:
       number: GPIO1
       mode: INPUT_PULLUP
       inverted: true
+    filters:
+      - delayed_on_off: 20ms
     on_state:
       lambda: | 
         if(id(dissable_relay1)==false){
@@ -86,6 +88,8 @@ binary_sensor:
       number: GPIO3
       mode: INPUT_PULLUP
       inverted: true
+    filters:
+      - delayed_on_off: 20ms
     on_state:
       lambda: | 
         if(id(dissable_relay2)==false){
@@ -100,6 +104,8 @@ binary_sensor:
       number: GPIO14
       mode: INPUT_PULLUP
       inverted: true
+    filters:
+      - delayed_on_off: 20ms
     on_multi_click:
       - timing:
           - ON for at most 1s
