@@ -45,6 +45,8 @@ binary_sensor:
       number: GPIO14
       mode: INPUT_PULLUP
       inverted: true
+    filters:
+      - delayed_on_off: 20ms
     on_state:
       - light.toggle: mini_relay
 
@@ -71,6 +73,8 @@ binary_sensor:
       number: GPIO3
       mode: INPUT_PULLUP
       inverted: true
+    filters:
+      - delayed_on_off: 20ms
     on_multi_click:
       - timing:
           - ON for at most 1s
