@@ -82,7 +82,7 @@ binary_sensor:
       number: GPIO4
       inverted: true
     filters:
-      - delayed_on_off: 50ms
+      - delayed_on_off: 20ms
   
   - platform: gpio
     name: "${name} tlačítko"
@@ -99,7 +99,7 @@ binary_sensor:
         - delay: 0.1s
         - switch.turn_off: relay
     filters:
-      - delayed_on_off: 5ms
+      - delayed_on_off: 20ms
 
   - platform: status
     name: "${name} připojení k HA"
