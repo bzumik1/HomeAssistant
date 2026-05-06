@@ -172,7 +172,7 @@ binary_sensor:
         input: true
         pullup: true
     filters:
-      - delayed_on: 50ms
+      - delayed_on_off: 20ms
     on_multi_click:
       - timing:
           - ON for at most 1s
