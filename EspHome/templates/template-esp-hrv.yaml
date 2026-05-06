@@ -118,24 +118,32 @@ binary_sensor:
     pin:
       number: 36
       inverted: true
+    filters:
+      - delayed_on_off: 20ms
 
   - platform: gpio
     name: "input2"
     pin:
       number: 39
       inverted: true
+    filters:
+      - delayed_on_off: 20ms
 
   - platform: gpio
     name: "input3"
     pin:
       number: 27
       inverted: true
+    filters:
+      - delayed_on_off: 20ms
 
   - platform: gpio
     name: "input4"
     pin:
       number: 14
       inverted: true
+    filters:
+      - delayed_on_off: 20ms
 
 number:
   - platform: template
