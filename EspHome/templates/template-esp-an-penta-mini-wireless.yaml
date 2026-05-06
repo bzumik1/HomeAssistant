@@ -37,16 +37,19 @@ binary_sensor:
     name: "tlačítko 1"
     filters:
       - invert:
+      - delayed_on_off: 20ms
   - platform: gpio
     pin: 8
     name: "tlačítko 2"
     filters:
       - invert:
+      - delayed_on_off: 20ms
   - platform: gpio
     pin: 9
     name: "tlačítko 3"
     filters:
       - invert:
+      - delayed_on_off: 20ms
 
 output:
   - platform: ledc
