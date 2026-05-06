@@ -41,6 +41,8 @@ binary_sensor:
         pullup: true
       inverted: true
     name: "${name} tlačítko"
+    filters:
+      - delayed_on_off: 20ms
     on_press:
       - switch.toggle: relay
 
