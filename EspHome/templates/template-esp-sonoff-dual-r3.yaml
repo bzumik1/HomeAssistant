@@ -61,6 +61,8 @@ binary_sensor:
       number: GPIO32
       mode: INPUT_PULLUP
       inverted: true
+    filters:
+      - delayed_on_off: 20ms
     on_multi_click:
       # Single press
       - timing:
@@ -112,6 +114,8 @@ binary_sensor:
       number: GPIO33
       mode: INPUT_PULLUP
       inverted: true
+    filters:
+      - delayed_on_off: 20ms
     on_multi_click:
       # Single press
       - timing:
