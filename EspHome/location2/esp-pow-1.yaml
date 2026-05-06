@@ -41,6 +41,8 @@ binary_sensor:
       inverted: True
     name: "${name} tlačítko"
     id: "esp_pow_1_button"
+    filters:
+      - delayed_on_off: 20ms
     on_press:
       - switch.toggle: esp_pow_1_relay
   
