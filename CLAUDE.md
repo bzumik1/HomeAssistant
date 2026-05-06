@@ -60,6 +60,10 @@ All credentials use `!secret` references. The `secrets.yaml` file exists per-loc
 
 Device names, sensor names, and comments are in Czech.
 
+## Binary Sensor Debounce
+
+All mechanical contacts (wall switches, garage door reed switches, mini-switch buttons) use the `delayed_on_off: 20ms` filter to suppress contact bounce. The filter publishes a state change only after the new state has remained stable for 20 ms in either direction (ON→OFF and OFF→ON). Keep this value consistent across the repo when adding new binary sensors for mechanical inputs.
+
 ## Hardware Patterns
 
 - **ESP32-C3** (AN Penta Mini): LEDC PWM outputs for single-color LED strips, I2C on GPIO6/7, `esp-idf` framework
