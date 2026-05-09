@@ -1,0 +1,201 @@
+substitutions:
+  open_duration: "25s"
+  close_duration: "25s"
+  measurement_interval: 1s
+
+packages:
+  common: !include common.yaml
+
+esp32_improv:
+  authorizer: none
+  wifi_timeout: 5min
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+
+uart:
+  tx_pin: GPIO25
+  rx_pin: GPIO26
+  baud_rate: 4800
+  parity: NONE
+  stop_bits: 2
+
+
+globals:
+  - id: switch1_press_time
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: switch2_press_time
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+
+
+switch:
+  - platform: gpio
+    pin: GPIO27
+    id: relay_open
+    restore_mode: ALWAYS_OFF
+    interlock: [relay_close]
+    interlock_wait_time: 200ms
+
+  - platform: gpio
+    pin: GPIO14
+    id: relay_close
+    restore_mode: ALWAYS_OFF
+    interlock: [relay_open]
+    interlock_wait_time: 200ms
+
+
+cover:
+  - platform: time_based
+    name: "${friendly_name}"
+    id: the_cover
+    device_class: blind
+    open_action:
+      - switch.turn_on: relay_open
+    open_duration: ${open_duration}
+    close_action:
+      - switch.turn_on: relay_close
+    close_duration: ${close_duration}
+    stop_action:
+      - switch.turn_off: relay_open
+      - switch.turn_off: relay_close
+
+
+light:
+  - platform: status_led
+    name: "stavová LED"
+    id: led_status
+    icon: mdi:led-on
+    entity_category: config
+    pin:
+      number: GPIO13
+      inverted: True
+
+
+binary_sensor:
+
+  - platform: gpio
+    name: "vypínač 1"
+    icon: mdi:arrow-up-box
+    id: the_switch_1
+    pin:
+      number: GPIO32
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on_off: 20ms
+    on_press:
+      then:
+        - lambda: id(switch1_press_time) = millis();
+        - if:
+            condition:
+              lambda: return id(the_cover).current_operation != CoverOperation::COVER_OPERATION_IDLE;
+            then:
+              - cover.stop: the_cover
+            else:
+              - cover.open: the_cover
+    on_release:
+      then:
+        - if:
+            condition:
+              lambda: return (millis() - id(switch1_press_time)) >= 500;
+            then:
+              - cover.stop: the_cover
+
+  - platform: gpio
+    name: "vypínač 2"
+    icon: mdi:arrow-down-box
+    id: the_switch_2
+    pin:
+      number: GPIO33
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on_off: 20ms
+    on_press:
+      then:
+        - lambda: id(switch2_press_time) = millis();
+        - if:
+            condition:
+              lambda: return id(the_cover).current_operation != CoverOperation::COVER_OPERATION_IDLE;
+            then:
+              - cover.stop: the_cover
+            else:
+              - cover.close: the_cover
+    on_release:
+      then:
+        - if:
+            condition:
+              lambda: return (millis() - id(switch2_press_time)) >= 500;
+            then:
+              - cover.stop: the_cover
+
+  - platform: gpio
+    name: "tlačítko"
+    icon: mdi:gesture-tap-button
+    pin:
+      number: GPIO00
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on_off: 20ms
+    on_click:
+      min_length: 50ms
+      max_length: 500ms
+      then:
+        - cover.toggle: the_cover
+
+
+sensor:
+  - platform: bl0939
+    update_interval: ${measurement_interval}
+    voltage:
+      name: "napětí"
+    current_1:
+      name: "proud 1"
+      id: current_1
+    current_2:
+      name: "proud 2"
+      id: current_2
+    active_power_1:
+      name: "výkon 1"
+      id: active_power_1
+    active_power_2:
+      name: "výkon 2"
+      id: active_power_2
+    energy_1:
+      name: "spotřeba 1"
+      icon: mdi:counter
+    energy_2:
+      name: "spotřeba 2"
+      icon: mdi:counter
+    energy_total:
+      name: "spotřeba celkem"
+      icon: mdi:counter
+
+  - platform: template
+    name: "výkon celkem"
+    icon: mdi:lightning-bolt
+    unit_of_measurement: "W"
+    lambda: |-
+      return id(active_power_1).state + id(active_power_2).state;
+    update_interval: ${measurement_interval}
+
+  - platform: template
+    name: "proud celkem"
+    icon: mdi:current-ac
+    unit_of_measurement: "A"
+    lambda: |-
+      return id(current_1).state + id(current_2).state;
+    update_interval: ${measurement_interval}
+
+
+time:
+  - platform: sntp
+    id: my_time
