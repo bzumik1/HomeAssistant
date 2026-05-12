@@ -1,6 +1,6 @@
 substitutions:
-  open_duration: "25s"
-  close_duration: "25s"
+  open_duration: "120s"
+  close_duration: "120s"
   measurement_interval: 1s
 
 packages:
