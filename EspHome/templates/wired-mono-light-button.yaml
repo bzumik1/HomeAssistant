@@ -1,0 +1,39 @@
+binary_sensor:
+  - platform: gpio
+    pin: ${button_pin}
+    name: "${button_name}"
+    filters:
+      - invert:
+      - delayed_on_off: 20ms
+    on_multi_click:
+      - timing:
+          - ON for at most 400ms
+          - OFF for at least 210ms
+        then:
+          - lambda: |-
+              float brightness = 1.0f;
+              if (id(${brightness_id}).has_state()) {
+                brightness = id(${brightness_id}).state / 100.0f;
+              }
+              if (id(${light_id}).current_values.is_on()) {
+                id(${light_id}).turn_off().perform();
+              } else {
+                id(${light_id}).turn_on().set_brightness(brightness).perform();
+              }
+      - timing:
+          - ON for at most 400ms
+          - OFF for at most 200ms
+          - ON for at most 400ms
+          - OFF for at least 200ms
+        then:
+          - homeassistant.event:
+              event: esphome.${name}_${switch_id}_double_press
+      - timing:
+          - ON for at least 500ms
+        then:
+          - lambda: |-
+              if (id(${light_id}).current_values.is_on() && id(${light_id}).current_values.get_brightness() > 0.99f) {
+                id(${light_id}).turn_on().set_brightness(0.01f).perform();
+              } else {
+                id(${light_id}).turn_on().set_brightness(1.0f).perform();
+              }
