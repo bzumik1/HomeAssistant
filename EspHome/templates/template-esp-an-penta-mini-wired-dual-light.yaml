@@ -73,34 +73,24 @@ output:
     frequency: 19531Hz
     id: LED_channel_5
 
-  - platform: template
-    id: LED_channel_1_3
-    type: float
-    write_action:
-      - output.set_level:
-          id: LED_channel_1
-          level: !lambda return state;
-      - output.set_level:
-          id: LED_channel_3
-          level: !lambda return state;
-
-  - platform: template
-    id: LED_channel_2_4
-    type: float
-    write_action:
-      - output.set_level:
-          id: LED_channel_2
-          level: !lambda return state;
-      - output.set_level:
-          id: LED_channel_4
-          level: !lambda return state;
-
 light:
   - platform: cwww
-    name: "světlo"
+    name: "${light_1_name}"
     icon: mdi:led-strip-variant
-    cold_white: LED_channel_1_3
-    warm_white: LED_channel_2_4
+    cold_white: LED_channel_1
+    warm_white: LED_channel_2
+    cold_white_color_temperature: ${cold_white_color_temperature}
+    warm_white_color_temperature: ${warm_white_color_temperature}
+    # Koriguje minimální jas, čím vyšší hodnota tim menší minimalní jas
+    gamma_correct: 1.2
+    constant_brightness: true
+    restore_mode: ALWAYS_ON
+
+  - platform: cwww
+    name: "${light_2_name}"
+    icon: mdi:led-strip-variant
+    cold_white: LED_channel_3
+    warm_white: LED_channel_4
     cold_white_color_temperature: ${cold_white_color_temperature}
     warm_white_color_temperature: ${warm_white_color_temperature}
     # Koriguje minimální jas, čím vyšší hodnota tim menší minimalní jas
@@ -110,14 +100,25 @@ light:
 
 button:
   - platform: template
-    name: "plný jas"
+    name: "plný jas 1"
     icon: mdi:weather-sunny-alert
     on_press:
       - output.set_level:
-          id: LED_channel_1_3
+          id: LED_channel_1
           level: 100%
       - output.set_level:
-          id: LED_channel_2_4
+          id: LED_channel_2
+          level: 100%
+
+  - platform: template
+    name: "plný jas 2"
+    icon: mdi:weather-sunny-alert
+    on_press:
+      - output.set_level:
+          id: LED_channel_3
+          level: 100%
+      - output.set_level:
+          id: LED_channel_4
           level: 100%
 
 
