@@ -43,21 +43,25 @@ binary_sensor:
           - ON for at most 400ms
           - OFF for at least 210ms
         then:
-          - homeassistant.event:
-              event: esphome.${name}_switch1_single_press
+          - light.toggle:
+              id: light_1
       - timing:
           - ON for at most 400ms
           - OFF for at most 200ms
           - ON for at most 400ms
           - OFF for at least 200ms
         then:
-          - homeassistant.event:
-              event: esphome.${name}_switch1_double_press
+          - lambda: |-
+              float min_m = id(light_1).get_traits().get_min_mireds();
+              float max_m = id(light_1).get_traits().get_max_mireds();
+              float target = id(light_1).current_values.get_color_temperature() < (min_m + max_m) / 2.0f ? max_m : min_m;
+              id(light_1).turn_on().set_color_temperature(target).perform();
       - timing:
           - ON for at least 500ms
         then:
-          - homeassistant.event:
-              event: esphome.${name}_switch1_long_press
+          - lambda: |-
+              bool is_bright = id(light_1).current_values.is_on() && id(light_1).current_values.get_brightness() > 0.99f;
+              id(light_1).turn_on().set_brightness(is_bright ? 0.01f : 1.0f).perform();
   - platform: gpio
     pin: 8
     name: "tlačítko 2"
@@ -69,21 +73,25 @@ binary_sensor:
           - ON for at most 400ms
           - OFF for at least 210ms
         then:
-          - homeassistant.event:
-              event: esphome.${name}_switch2_single_press
+          - light.toggle:
+              id: light_2
       - timing:
           - ON for at most 400ms
           - OFF for at most 200ms
           - ON for at most 400ms
           - OFF for at least 200ms
         then:
-          - homeassistant.event:
-              event: esphome.${name}_switch2_double_press
+          - lambda: |-
+              float min_m = id(light_2).get_traits().get_min_mireds();
+              float max_m = id(light_2).get_traits().get_max_mireds();
+              float target = id(light_2).current_values.get_color_temperature() < (min_m + max_m) / 2.0f ? max_m : min_m;
+              id(light_2).turn_on().set_color_temperature(target).perform();
       - timing:
           - ON for at least 500ms
         then:
-          - homeassistant.event:
-              event: esphome.${name}_switch2_long_press
+          - lambda: |-
+              bool is_bright = id(light_2).current_values.is_on() && id(light_2).current_values.get_brightness() > 0.99f;
+              id(light_2).turn_on().set_brightness(is_bright ? 0.01f : 1.0f).perform();
   - platform: gpio
     pin: 9
     name: "tlačítko 3"
@@ -116,6 +124,7 @@ output:
 light:
   - platform: cwww
     name: "${light_1_name}"
+    id: light_1
     icon: mdi:led-strip-variant
     cold_white: LED_channel_1
     warm_white: LED_channel_2
@@ -128,6 +137,7 @@ light:
 
   - platform: cwww
     name: "${light_2_name}"
+    id: light_2
     icon: mdi:led-strip-variant
     cold_white: LED_channel_3
     warm_white: LED_channel_4
