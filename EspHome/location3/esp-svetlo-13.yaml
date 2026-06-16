@@ -1,0 +1,11 @@
+# Configuration
+substitutions:
+  name: "esp-svetlo-13"
+  friendly_name: "Světlo - 13"
+  light_1_name: "světlo 13a"
+  light_2_name: "světlo 13b"
+  cold_white_color_temperature: "6500 K"
+  warm_white_color_temperature: "2700 K"
+
+packages:
+  penta-plus-template: !include ../templates/template-esp-an-penta-plus-wired-dual-light.yaml
