@@ -1,0 +1,11 @@
+# Configuration
+substitutions:
+  name: "esp-svetlo-07"
+  friendly_name: "Světlo - 07"
+  light_1_name: "světlo 7a"
+  light_2_name: "světlo 7b"
+  cold_white_color_temperature: "6500 K"
+  warm_white_color_temperature: "2200 K"
+
+packages:
+  penta-mini-template: !include ../templates/template-esp-an-penta-mini-wired-dual-light.yaml
