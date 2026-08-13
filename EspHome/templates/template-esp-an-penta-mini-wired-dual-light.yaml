@@ -85,7 +85,7 @@ light:
     # Koriguje minimální jas, čím vyšší hodnota tim menší minimalní jas
     gamma_correct: 1.2
     constant_brightness: true
-    restore_mode: ALWAYS_ON
+    restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: cwww
     name: "${light_2_name}"
@@ -98,7 +98,7 @@ light:
     # Koriguje minimální jas, čím vyšší hodnota tim menší minimalní jas
     gamma_correct: 1.2
     constant_brightness: true
-    restore_mode: ALWAYS_ON
+    restore_mode: RESTORE_DEFAULT_OFF
 
 button:
   - platform: template
