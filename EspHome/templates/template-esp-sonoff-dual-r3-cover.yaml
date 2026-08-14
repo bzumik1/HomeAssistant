@@ -5,6 +5,7 @@ substitutions:
 
 packages:
   common: !include common.yaml
+  bluetooth-proxy: !include bluetooth-proxy.yaml
 
 esp32_improv:
   authorizer: none
