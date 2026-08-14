@@ -42,7 +42,15 @@ sensor:
     name: "interní teplota"
     accuracy_decimals: 2
     update_interval: 30s
-    
+
+  - platform: homeassistant
+    id: ha_color_temperature
+    entity_id: input_number.teplota_svetla
+
+  - platform: homeassistant
+    id: ha_brightness
+    entity_id: input_number.jas_svetla
+
 binary_sensor:
   - platform: gpio
     pin: 9
