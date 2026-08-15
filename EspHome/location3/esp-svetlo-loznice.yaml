@@ -9,3 +9,6 @@ substitutions:
 
 packages:
   penta-mini-template: !include ../templates/template-esp-an-penta-mini-wired-dual-light.yaml
+
+wifi:
+  use_address: esp-svetlo-06.local
