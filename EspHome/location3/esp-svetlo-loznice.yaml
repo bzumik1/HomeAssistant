@@ -1,9 +1,9 @@
 # Configuration
 substitutions:
-  name: "esp-svetlo-02"
-  friendly_name: "Světlo - 02"
-  light_1_name: "světlo 2a"
-  light_2_name: "světlo 2b"
+  name: "esp-svetlo-loznice"
+  friendly_name: "Světlo - ložnice"
+  light_1_name: "1"
+  light_2_name: "2"
   cold_white_color_temperature: "6500 K"
   warm_white_color_temperature: "2700 K"
 
