@@ -32,8 +32,12 @@ binary_sensor:
           - ON for at least 500ms
         then:
           - lambda: |-
+              float brightness = 0.01f;
+              if (id(${brightness_id}).has_state()) {
+                brightness = id(${brightness_id}).state / 100.0f;
+              }
               if (id(${light_id}).current_values.is_on() && id(${light_id}).current_values.get_brightness() > 0.99f) {
-                id(${light_id}).turn_on().set_brightness(0.01f).perform();
+                id(${light_id}).turn_on().set_brightness(brightness).perform();
               } else {
                 id(${light_id}).turn_on().set_brightness(1.0f).perform();
               }
