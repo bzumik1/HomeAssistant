@@ -5,6 +5,3 @@ substitutions:
 
 packages:
   cover-template: !include ../templates/template-esp-sonoff-dual-r3-cover.yaml
-
-wifi:
-  use_address: esp-sonoff-dual-r3-3.local
