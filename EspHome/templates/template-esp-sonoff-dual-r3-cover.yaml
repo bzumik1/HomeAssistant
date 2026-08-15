@@ -54,7 +54,7 @@ switch:
 
 cover:
   - platform: time_based
-    name: "${friendly_name}"
+    name: ""
     id: the_cover
     device_class: blind
     open_action:
