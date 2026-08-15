@@ -37,5 +37,7 @@ binary_sensor:
           - ON for at least 500ms
         then:
           - lambda: |-
+              float brightness = id(ha_brightness).state;
+              float dimmed = std::isnan(brightness) ? 0.01f : brightness / 100.0f;
               bool is_bright = id(${light_id}).current_values.is_on() && id(${light_id}).current_values.get_brightness() > 0.99f;
-              id(${light_id}).turn_on().set_brightness(is_bright ? 0.01f : 1.0f).perform();
+              id(${light_id}).turn_on().set_brightness(is_bright ? dimmed : 1.0f).perform();
