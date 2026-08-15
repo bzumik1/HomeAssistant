@@ -2,8 +2,8 @@
 substitutions:
   name: "esp-svetlo-pradelna"
   friendly_name: "Světlo - prádelna"
-  light_1_name: "1"
-  light_2_name: "2"
+  light_1_name: "okruh 1"
+  light_2_name: "okruh 2"
   cold_white_color_temperature: "6500 K"
   warm_white_color_temperature: "2700 K"
 
