@@ -1,7 +1,7 @@
 # Configuration
 substitutions:
-  name: esp-sonoff-dual-r3-4
-  friendly_name: "Žaluzie - sonoff 4"
+  name: "esp-zaluzie-jidelna-1"
+  friendly_name: "Žaluzie - jídelna 1"
 
 packages:
   cover-template: !include ../templates/template-esp-sonoff-dual-r3-cover.yaml
