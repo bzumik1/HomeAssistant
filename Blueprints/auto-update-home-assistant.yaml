@@ -1,0 +1,166 @@
+blueprint:
+  name: Aktualizace - Home Assistant a HACS
+  description: >-
+    Každý den v nastavený čas nainstaluje aktualizace z HACS a poté aktualizaci
+    Home Assistant Core, případně Operating System, vždy se zálohou. Za jeden běh
+    se nainstaluje nejvýše jedna z aktualizací Core / OS, protože obě restartují
+    systém; druhá přijde na řadu další den. Aktualizace z HACS se projeví po
+    nejbližším restartu. Akce po dokončení se spustí před instalací Core / OS
+    a má k dispozici proměnnou `message` se souhrnem.
+  domain: automation
+  author: Jakub Znamenáček
+  homeassistant:
+    min_version: "2025.4.0"
+  input:
+    update_time:
+      name: Čas aktualizace
+      description: Kdy se mají aktualizace instalovat. Nastav až po doběhnutí aktualizace ESPHome zařízení.
+      default: "04:00:00"
+      selector:
+        time: {}
+
+    min_age_days:
+      name: Minimální stáří aktualizace
+      description: >-
+        Kolik dní musí být aktualizace dostupná, než se nainstaluje. Počítá se
+        od poslední změny stavu entity, restart Home Assistanta odpočet vynuluje.
+      default: 3
+      selector:
+        number:
+          min: 0
+          max: 30
+          unit_of_measurement: dní
+
+    core_update:
+      name: Home Assistant Core
+      description: Update entita Home Assistant Core.
+      default: update.home_assistant_core_update
+      selector:
+        entity:
+          filter:
+            - integration: hassio
+              domain: update
+
+    os_update:
+      name: Home Assistant Operating System
+      description: Update entita Home Assistant Operating System.
+      default: update.home_assistant_operating_system_update
+      selector:
+        entity:
+          filter:
+            - integration: hassio
+              domain: update
+
+    include_hacs:
+      name: Aktualizovat HACS
+      description: Instalovat i aktualizace integrací a karet z HACS.
+      default: true
+      selector:
+        boolean: {}
+
+    excluded_updates:
+      name: Vynechané aktualizace z HACS
+      description: Update entity z HACS, které se nemají aktualizovat automaticky.
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - integration: marketplace
+              domain: update
+            - integration: hacs
+              domain: update
+
+    notify_action:
+      name: Akce po dokončení
+      description: >-
+        Spustí se po každém běhu, ve kterém se něco instaluje, ještě před
+        instalací Core / OS. Souhrn je v proměnné `message`.
+      selector:
+        action: {}
+
+variables:
+  min_age_days: !input min_age_days
+  core_update: !input core_update
+  os_update: !input os_update
+  include_hacs: !input include_hacs
+  excluded_updates: !input excluded_updates
+  hacs_pending: >-
+    {% set ns = namespace(items=[]) %}
+    {% if include_hacs %}
+      {% for entity in (integration_entities('marketplace') + integration_entities('hacs'))
+        | select('match', 'update.')
+        | select('is_state', 'on')
+        | reject('in', excluded_updates) %}
+        {% if not is_state_attr(entity, 'in_progress', true)
+          and states[entity].last_changed < now() - timedelta(days=min_age_days | int) %}
+          {% set ns.items = ns.items + [entity] %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    {{ ns.items }}
+  system_pending: >-
+    {% set ns = namespace(entity='') %}
+    {% for entity in [core_update, os_update] %}
+      {% if not ns.entity and is_state(entity, 'on')
+        and states[entity].last_changed < now() - timedelta(days=min_age_days | int) %}
+        {% set ns.entity = entity %}
+      {% endif %}
+    {% endfor %}
+    {{ ns.entity }}
+
+triggers:
+  - trigger: time
+    at: !input update_time
+
+conditions:
+  - condition: template
+    value_template: "{{ hacs_pending | count > 0 or system_pending != '' }}"
+
+actions:
+  - variables:
+      installed: []
+      failed: []
+
+  - repeat:
+      for_each: "{{ hacs_pending }}"
+      sequence:
+        - action: update.install
+          target:
+            entity_id: "{{ repeat.item }}"
+          continue_on_error: true
+        - wait_template: "{{ is_state(repeat.item, 'off') }}"
+          timeout: "00:05:00"
+          continue_on_timeout: true
+        - variables:
+            installed: "{{ installed + [repeat.item] if wait.completed else installed }}"
+            failed: "{{ failed if wait.completed else failed + [repeat.item] }}"
+
+  - variables:
+      message: >-
+        {% set lines = [] %}
+        {% if installed %}
+          {% set lines = lines + ['HACS aktualizováno: ' ~ (expand(installed) | map(attribute='name') | join(', '))] %}
+        {% endif %}
+        {% if failed %}
+          {% set lines = lines + ['HACS selhalo: ' ~ (expand(failed) | map(attribute='name') | join(', '))] %}
+        {% endif %}
+        {% if system_pending %}
+          {% set lines = lines + ['Instaluji ' ~ state_attr(system_pending, 'title') ~ ' '
+            ~ state_attr(system_pending, 'latest_version') ~ ' (záloha + restart)'] %}
+        {% endif %}
+        {{ lines | join('\n') }}
+
+  - sequence: !input notify_action
+
+  - if:
+      - condition: template
+        value_template: "{{ system_pending != '' }}"
+    then:
+      - action: update.install
+        target:
+          entity_id: "{{ system_pending }}"
+        data:
+          backup: true
+
+mode: single
