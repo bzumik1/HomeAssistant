@@ -3,13 +3,16 @@ set -eu
 
 TARGET_DIR="${TARGET_DIR:-/root/config/esphome}"
 REPO_URL="https://github.com/bzumik1/HomeAssistant"
+API_URL="https://api.github.com/repos/bzumik1/HomeAssistant/contents"
 REF="main"
 LOCATION="EspHome/location3"
 
-WORK_DIR="$(mktemp -d)"
-trap 'rm -rf "$WORK_DIR"' EXIT
+names="$(curl -fsSL "$API_URL/$LOCATION?ref=$REF" | grep -o '"name": *"[^"]*\.yaml"' | sed 's/.*"\([^"]*\)"$/\1/')"
+if [ -z "$names" ]; then
+  echo "Chyba: v $LOCATION na GitHubu nejsou žádné konfigurace" >&2
+  exit 1
+fi
 
-git clone --quiet --depth 1 --branch "$REF" "$REPO_URL" "$WORK_DIR"
 mkdir -p "$TARGET_DIR"
 
 secrets="$TARGET_DIR/secrets.yaml"
@@ -23,8 +26,7 @@ if [ -L "$secrets" ]; then
   echo "secrets.yaml převeden ze symlinku na soubor"
 fi
 
-for src in "$WORK_DIR/$LOCATION"/*.yaml; do
-  name="$(basename "$src")"
+for name in $names; do
   [ "$name" = "secrets.yaml" ] && continue
   dest="$TARGET_DIR/$name"
 
