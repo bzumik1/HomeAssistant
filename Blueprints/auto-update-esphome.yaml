@@ -2,9 +2,9 @@ blueprint:
   name: Aktualizace - ESPHome zařízení
   description: >-
     Každý den v nastavený čas postupně nainstaluje aktualizace firmwaru ESPHome
-    zařízení, které jsou dostupné alespoň zadaný počet dní. Po dokončení spustí
-    akci, ve které je k dispozici proměnná `message` se souhrnem a seznamy entit
-    `installed` a `failed`.
+    zařízení, které jsou dostupné alespoň zadaný počet dní. V čas oznámení
+    předem upozorní, co se při nejbližším běhu nainstaluje. Akce notifikace má
+    k dispozici proměnnou `message` se souhrnem.
   domain: automation
   author: Jakub Znamenáček
   homeassistant:
@@ -14,6 +14,13 @@ blueprint:
       name: Čas aktualizace
       description: Kdy se mají aktualizace instalovat.
       default: "02:00:00"
+      selector:
+        time: {}
+
+    announce_time:
+      name: Čas oznámení
+      description: Kdy předem upozornit na aktualizace, které se nainstalují při nejbližším běhu.
+      default: "20:00:00"
       selector:
         time: {}
 
@@ -41,16 +48,24 @@ blueprint:
               domain: update
 
     notify_action:
-      name: Akce po dokončení
+      name: Notifikace
       description: >-
-        Spustí se po každém běhu, ve kterém se něco instalovalo. Souhrn je
-        v proměnné `message`.
+        Spustí se v čas oznámení a po dokončení běhu, ve kterém se něco
+        instalovalo. Text je v proměnné `message`.
       selector:
         action: {}
 
 variables:
+  update_time: !input update_time
   min_age_days: !input min_age_days
   excluded_updates: !input excluded_updates
+  run_at: >-
+    {% if trigger.id == 'announce' %}
+      {% set next_run = today_at(update_time) %}
+      {{ (next_run if next_run > now() else next_run + timedelta(days=1)).isoformat() }}
+    {% else %}
+      {{ now().isoformat() }}
+    {% endif %}
   pending: >-
     {% set ns = namespace(items=[]) %}
     {% for entity in integration_entities('esphome')
@@ -58,7 +73,7 @@ variables:
       | select('is_state', 'on')
       | reject('in', excluded_updates) %}
       {% if not is_state_attr(entity, 'in_progress', true)
-        and states[entity].last_changed < now() - timedelta(days=min_age_days | int) %}
+        and states[entity].last_changed < as_datetime(run_at) - timedelta(days=min_age_days | int) %}
         {% set ns.items = ns.items + [entity] %}
       {% endif %}
     {% endfor %}
@@ -67,12 +82,27 @@ variables:
 triggers:
   - trigger: time
     at: !input update_time
+    id: update
+  - trigger: time
+    at: !input announce_time
+    id: announce
 
 conditions:
   - condition: template
     value_template: "{{ pending | count > 0 }}"
 
 actions:
+  - if:
+      - condition: trigger
+        id: announce
+    then:
+      - variables:
+          message: >-
+            {{ as_datetime(run_at).strftime('%-d. %-m. v %H:%M') }} se nainstaluje:
+            {{ expand(pending) | map(attribute='name') | join(', ') }}
+      - sequence: !input notify_action
+      - stop: Oznámení odesláno
+
   - variables:
       installed: []
       failed: []

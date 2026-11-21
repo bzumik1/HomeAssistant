@@ -5,8 +5,9 @@ blueprint:
     Home Assistant Core, případně Operating System, vždy se zálohou. Za jeden běh
     se nainstaluje nejvýše jedna z aktualizací Core / OS, protože obě restartují
     systém; druhá přijde na řadu další den. Aktualizace z HACS se projeví po
-    nejbližším restartu. Akce po dokončení se spustí před instalací Core / OS
-    a má k dispozici proměnnou `message` se souhrnem.
+    nejbližším restartu. V čas oznámení předem upozorní, co se při nejbližším
+    běhu nainstaluje. Akce notifikace má k dispozici proměnnou `message` se
+    souhrnem; po běhu se spustí ještě před instalací Core / OS.
   domain: automation
   author: Jakub Znamenáček
   homeassistant:
@@ -16,6 +17,13 @@ blueprint:
       name: Čas aktualizace
       description: Kdy se mají aktualizace instalovat. Nastav až po doběhnutí aktualizace ESPHome zařízení.
       default: "04:00:00"
+      selector:
+        time: {}
+
+    announce_time:
+      name: Čas oznámení
+      description: Kdy předem upozornit na aktualizace, které se nainstalují při nejbližším běhu.
+      default: "20:00:00"
       selector:
         time: {}
 
@@ -72,19 +80,27 @@ blueprint:
               domain: update
 
     notify_action:
-      name: Akce po dokončení
+      name: Notifikace
       description: >-
-        Spustí se po každém běhu, ve kterém se něco instaluje, ještě před
-        instalací Core / OS. Souhrn je v proměnné `message`.
+        Spustí se v čas oznámení a po každém běhu, ve kterém se něco instaluje,
+        ještě před instalací Core / OS. Text je v proměnné `message`.
       selector:
         action: {}
 
 variables:
+  update_time: !input update_time
   min_age_days: !input min_age_days
   core_update: !input core_update
   os_update: !input os_update
   include_hacs: !input include_hacs
   excluded_updates: !input excluded_updates
+  run_at: >-
+    {% if trigger.id == 'announce' %}
+      {% set next_run = today_at(update_time) %}
+      {{ (next_run if next_run > now() else next_run + timedelta(days=1)).isoformat() }}
+    {% else %}
+      {{ now().isoformat() }}
+    {% endif %}
   hacs_pending: >-
     {% set ns = namespace(items=[]) %}
     {% if include_hacs %}
@@ -93,7 +109,7 @@ variables:
         | select('is_state', 'on')
         | reject('in', excluded_updates) %}
         {% if not is_state_attr(entity, 'in_progress', true)
-          and states[entity].last_changed < now() - timedelta(days=min_age_days | int) %}
+          and states[entity].last_changed < as_datetime(run_at) - timedelta(days=min_age_days | int) %}
           {% set ns.items = ns.items + [entity] %}
         {% endif %}
       {% endfor %}
@@ -103,21 +119,43 @@ variables:
     {% set ns = namespace(entity='') %}
     {% for entity in [core_update, os_update] %}
       {% if not ns.entity and is_state(entity, 'on')
-        and states[entity].last_changed < now() - timedelta(days=min_age_days | int) %}
+        and states[entity].last_changed < as_datetime(run_at) - timedelta(days=min_age_days | int) %}
         {% set ns.entity = entity %}
       {% endif %}
     {% endfor %}
     {{ ns.entity }}
+  system_pending_name: >-
+    {% if system_pending %}
+      {{ state_attr(system_pending, 'title') }} {{ state_attr(system_pending, 'latest_version') }} (záloha + restart)
+    {% endif %}
 
 triggers:
   - trigger: time
     at: !input update_time
+    id: update
+  - trigger: time
+    at: !input announce_time
+    id: announce
 
 conditions:
   - condition: template
     value_template: "{{ hacs_pending | count > 0 or system_pending != '' }}"
 
 actions:
+  - if:
+      - condition: trigger
+        id: announce
+    then:
+      - variables:
+          message: >-
+            {% set items = expand(hacs_pending) | map(attribute='name') | list %}
+            {% if system_pending %}
+              {% set items = items + [system_pending_name] %}
+            {% endif %}
+            {{ as_datetime(run_at).strftime('%-d. %-m. v %H:%M') }} se nainstaluje: {{ items | join(', ') }}
+      - sequence: !input notify_action
+      - stop: Oznámení odesláno
+
   - variables:
       installed: []
       failed: []
@@ -146,8 +184,7 @@ actions:
           {% set lines = lines + ['HACS selhalo: ' ~ (expand(failed) | map(attribute='name') | join(', '))] %}
         {% endif %}
         {% if system_pending %}
-          {% set lines = lines + ['Instaluji ' ~ state_attr(system_pending, 'title') ~ ' '
-            ~ state_attr(system_pending, 'latest_version') ~ ' (záloha + restart)'] %}
+          {% set lines = lines + ['Instaluji ' ~ system_pending_name] %}
         {% endif %}
         {{ lines | join('\n') }}
 
