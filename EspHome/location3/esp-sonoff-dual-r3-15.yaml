@@ -1,5 +1,13 @@
 # Configuration
 substitutions:
-  name: esp-sonoff-dual-r3-15
+  name: "esp-sonoff-dual-r3-15"
+  friendly_name: "Oběhové čerpadlo TUV"
+  switch1_single_press: "none"
+  switch1_double_press: "none"
+  switch1_long_press: "none"
+  switch2_single_press: "none"
+  switch2_double_press: "none"
+  switch2_long_press: "none"
 
-<<: !include templates/template-esp-sonoff-dual-r3.yaml
+packages:
+  sonoff-template: !include ../templates/template-esp-sonoff-dual-r3.yaml
