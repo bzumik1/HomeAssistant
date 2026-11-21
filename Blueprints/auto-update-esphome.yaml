@@ -1,0 +1,107 @@
+blueprint:
+  name: Aktualizace - ESPHome zařízení
+  description: >-
+    Každý den v nastavený čas postupně nainstaluje aktualizace firmwaru ESPHome
+    zařízení, které jsou dostupné alespoň zadaný počet dní. Po dokončení spustí
+    akci, ve které je k dispozici proměnná `message` se souhrnem a seznamy entit
+    `installed` a `failed`.
+  domain: automation
+  author: Jakub Znamenáček
+  homeassistant:
+    min_version: "2025.4.0"
+  input:
+    update_time:
+      name: Čas aktualizace
+      description: Kdy se mají aktualizace instalovat.
+      default: "02:00:00"
+      selector:
+        time: {}
+
+    min_age_days:
+      name: Minimální stáří aktualizace
+      description: >-
+        Kolik dní musí být aktualizace dostupná, než se nainstaluje. Počítá se
+        od poslední změny stavu entity, restart Home Assistanta odpočet vynuluje.
+      default: 3
+      selector:
+        number:
+          min: 0
+          max: 30
+          unit_of_measurement: dní
+
+    excluded_updates:
+      name: Vynechaná zařízení
+      description: Update entity ESPHome zařízení, která se nemají aktualizovat automaticky.
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - integration: esphome
+              domain: update
+
+    notify_action:
+      name: Akce po dokončení
+      description: >-
+        Spustí se po každém běhu, ve kterém se něco instalovalo. Souhrn je
+        v proměnné `message`.
+      selector:
+        action: {}
+
+variables:
+  min_age_days: !input min_age_days
+  excluded_updates: !input excluded_updates
+  pending: >-
+    {% set ns = namespace(items=[]) %}
+    {% for entity in integration_entities('esphome')
+      | select('match', 'update.')
+      | select('is_state', 'on')
+      | reject('in', excluded_updates) %}
+      {% if not is_state_attr(entity, 'in_progress', true)
+        and states[entity].last_changed < now() - timedelta(days=min_age_days | int) %}
+        {% set ns.items = ns.items + [entity] %}
+      {% endif %}
+    {% endfor %}
+    {{ ns.items }}
+
+triggers:
+  - trigger: time
+    at: !input update_time
+
+conditions:
+  - condition: template
+    value_template: "{{ pending | count > 0 }}"
+
+actions:
+  - variables:
+      installed: []
+      failed: []
+
+  - repeat:
+      for_each: "{{ pending }}"
+      sequence:
+        - action: update.install
+          target:
+            entity_id: "{{ repeat.item }}"
+          continue_on_error: true
+        - wait_template: "{{ is_state(repeat.item, 'off') }}"
+          timeout: "00:05:00"
+          continue_on_timeout: true
+        - variables:
+            installed: "{{ installed + [repeat.item] if wait.completed else installed }}"
+            failed: "{{ failed if wait.completed else failed + [repeat.item] }}"
+
+  - variables:
+      message: >-
+        {% set lines = [] %}
+        {% if installed %}
+          {% set lines = lines + ['Aktualizováno: ' ~ (expand(installed) | map(attribute='name') | join(', '))] %}
+        {% endif %}
+        {% if failed %}
+          {% set lines = lines + ['Selhalo: ' ~ (expand(failed) | map(attribute='name') | join(', '))] %}
+        {% endif %}
+        {{ lines | join('\n') }}
+
+  - sequence: !input notify_action
+
+mode: single
