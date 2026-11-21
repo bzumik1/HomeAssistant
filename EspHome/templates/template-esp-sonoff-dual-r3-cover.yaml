@@ -8,6 +8,11 @@ packages:
   common: !include common.yaml
   bluetooth-proxy: !include bluetooth-proxy.yaml
 
+external_components:
+  - source: github://bzumik1/esphome@current-based-learn-durations
+    components: [current_based]
+    refresh: 0s
+
 esp32_improv:
   authorizer: none
   wifi_timeout: 5min
@@ -32,10 +37,6 @@ globals:
     restore_value: no
     initial_value: '0'
   - id: switch2_press_time
-    type: uint32_t
-    restore_value: no
-    initial_value: '0'
-  - id: calibration_start
     type: uint32_t
     restore_value: no
     initial_value: '0'
@@ -77,40 +78,7 @@ cover:
       - switch.turn_off: relay_close
     start_sensing_delay: ${start_sensing_delay}
     max_duration: ${max_duration}s
-
-
-number:
-  - platform: template
-    name: "doba otevírání"
-    id: open_duration
-    icon: mdi:timer-arrow-up-outline
-    entity_category: config
-    unit_of_measurement: s
-    mode: box
-    min_value: 5
-    max_value: ${max_duration}
-    step: 0.1
-    initial_value: 60
-    optimistic: true
-    restore_value: true
-    on_value:
-      - lambda: id(the_cover).set_open_duration(x * 1000);
-
-  - platform: template
-    name: "doba zavírání"
-    id: close_duration
-    icon: mdi:timer-arrow-down-outline
-    entity_category: config
-    unit_of_measurement: s
-    mode: box
-    min_value: 5
-    max_value: ${max_duration}
-    step: 0.1
-    initial_value: 60
-    optimistic: true
-    restore_value: true
-    on_value:
-      - lambda: id(the_cover).set_close_duration(x * 1000);
+    learn_durations: true
 
 
 button:
@@ -134,31 +102,17 @@ script:
           condition:
             lambda: return id(the_cover).current_operation == COVER_OPERATION_IDLE;
       - delay: 1s
-      - lambda: id(calibration_start) = millis();
       - cover.open: the_cover
       - wait_until:
           condition:
             lambda: return id(the_cover).current_operation == COVER_OPERATION_IDLE;
-      - if:
-          condition:
-            lambda: return id(the_cover).position == COVER_OPEN;
-          then:
-            - number.set:
-                id: open_duration
-                value: !lambda return (millis() - id(calibration_start)) / 1000.0f;
       - delay: 1s
-      - lambda: id(calibration_start) = millis();
       - cover.close: the_cover
       - wait_until:
           condition:
             lambda: return id(the_cover).current_operation == COVER_OPERATION_IDLE;
-      - if:
-          condition:
-            lambda: return id(the_cover).position == COVER_CLOSED;
-          then:
-            - number.set:
-                id: close_duration
-                value: !lambda return (millis() - id(calibration_start)) / 1000.0f;
+      - component.update: open_duration
+      - component.update: close_duration
 
 
 light:
@@ -291,6 +245,28 @@ sensor:
     lambda: |-
       return id(current_1).state + id(current_2).state;
     update_interval: ${measurement_interval}
+
+  - platform: template
+    name: "doba otevírání"
+    id: open_duration
+    icon: mdi:timer-arrow-up-outline
+    entity_category: diagnostic
+    unit_of_measurement: s
+    accuracy_decimals: 1
+    lambda: |-
+      return id(the_cover).get_open_duration() / 1000.0f;
+    update_interval: 60s
+
+  - platform: template
+    name: "doba zavírání"
+    id: close_duration
+    icon: mdi:timer-arrow-down-outline
+    entity_category: diagnostic
+    unit_of_measurement: s
+    accuracy_decimals: 1
+    lambda: |-
+      return id(the_cover).get_close_duration() / 1000.0f;
+    update_interval: 60s
 
 
 time:
