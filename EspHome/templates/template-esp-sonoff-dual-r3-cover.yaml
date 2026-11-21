@@ -1,7 +1,8 @@
 substitutions:
-  open_duration: "120s"
-  close_duration: "120s"
   measurement_interval: 1s
+  moving_current_threshold: "0.1"
+  start_sensing_delay: 2s
+  max_duration: "120"
 
 packages:
   common: !include common.yaml
@@ -34,6 +35,10 @@ globals:
     type: uint32_t
     restore_value: no
     initial_value: '0'
+  - id: calibration_start
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
 
 
 switch:
@@ -53,19 +58,107 @@ switch:
 
 
 cover:
-  - platform: time_based
+  - platform: current_based
     name: ""
     id: the_cover
     device_class: blind
+    open_sensor: current_1
+    open_moving_current_threshold: ${moving_current_threshold}
+    open_duration: 60s
     open_action:
       - switch.turn_on: relay_open
-    open_duration: ${open_duration}
+    close_sensor: current_2
+    close_moving_current_threshold: ${moving_current_threshold}
+    close_duration: 60s
     close_action:
       - switch.turn_on: relay_close
-    close_duration: ${close_duration}
     stop_action:
       - switch.turn_off: relay_open
       - switch.turn_off: relay_close
+    start_sensing_delay: ${start_sensing_delay}
+    max_duration: ${max_duration}s
+
+
+number:
+  - platform: template
+    name: "doba otevírání"
+    id: open_duration
+    icon: mdi:timer-arrow-up-outline
+    entity_category: config
+    unit_of_measurement: s
+    mode: box
+    min_value: 5
+    max_value: ${max_duration}
+    step: 0.1
+    initial_value: 60
+    optimistic: true
+    restore_value: true
+    on_value:
+      - lambda: id(the_cover).set_open_duration(x * 1000);
+
+  - platform: template
+    name: "doba zavírání"
+    id: close_duration
+    icon: mdi:timer-arrow-down-outline
+    entity_category: config
+    unit_of_measurement: s
+    mode: box
+    min_value: 5
+    max_value: ${max_duration}
+    step: 0.1
+    initial_value: 60
+    optimistic: true
+    restore_value: true
+    on_value:
+      - lambda: id(the_cover).set_close_duration(x * 1000);
+
+
+button:
+  - platform: template
+    name: "kalibrace"
+    icon: mdi:arrow-expand-vertical
+    entity_category: config
+    on_press:
+      - script.execute: calibrate
+
+
+script:
+  - id: calibrate
+    mode: single
+    then:
+      - cover.stop: the_cover
+      - delay: 1s
+      - lambda: id(the_cover).position = COVER_OPEN;
+      - cover.close: the_cover
+      - wait_until:
+          condition:
+            lambda: return id(the_cover).current_operation == COVER_OPERATION_IDLE;
+      - delay: 1s
+      - lambda: id(calibration_start) = millis();
+      - cover.open: the_cover
+      - wait_until:
+          condition:
+            lambda: return id(the_cover).current_operation == COVER_OPERATION_IDLE;
+      - if:
+          condition:
+            lambda: return id(the_cover).position == COVER_OPEN;
+          then:
+            - number.set:
+                id: open_duration
+                value: !lambda return (millis() - id(calibration_start)) / 1000.0f;
+      - delay: 1s
+      - lambda: id(calibration_start) = millis();
+      - cover.close: the_cover
+      - wait_until:
+          condition:
+            lambda: return id(the_cover).current_operation == COVER_OPERATION_IDLE;
+      - if:
+          condition:
+            lambda: return id(the_cover).position == COVER_CLOSED;
+          then:
+            - number.set:
+                id: close_duration
+                value: !lambda return (millis() - id(calibration_start)) / 1000.0f;
 
 
 light:
@@ -93,6 +186,7 @@ binary_sensor:
       - delayed_on_off: 20ms
     on_press:
       then:
+        - script.stop: calibrate
         - lambda: id(switch1_press_time) = millis();
         - if:
             condition:
@@ -121,6 +215,7 @@ binary_sensor:
       - delayed_on_off: 20ms
     on_press:
       then:
+        - script.stop: calibrate
         - lambda: id(switch2_press_time) = millis();
         - if:
             condition:
@@ -150,6 +245,7 @@ binary_sensor:
       min_length: 50ms
       max_length: 500ms
       then:
+        - script.stop: calibrate
         - cover.toggle: the_cover
 
 
