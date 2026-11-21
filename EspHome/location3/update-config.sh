@@ -1,45 +1,48 @@
 #!/bin/sh
 set -eu
 
-TARGET_DIR="/root/config/esphome"
-REPO_URL="https://github.com/bzumik1/HomeAssistant.git"
-REPO_REL="HomeAssistant"
-SOURCE_REL="$REPO_REL/EspHome/location3"
-REPO_DIR="$TARGET_DIR/$REPO_REL"
-SOURCE_DIR="$TARGET_DIR/$SOURCE_REL"
-TEMPLATES_SRC_REL="$(basename "$TARGET_DIR")/$REPO_REL/EspHome/templates"
-TEMPLATES_LINK="$(dirname "$TARGET_DIR")/templates"
+TARGET_DIR="${TARGET_DIR:-/root/config/esphome}"
+REPO_URL="https://github.com/bzumik1/HomeAssistant"
+REF="main"
+LOCATION="EspHome/location3"
 
+WORK_DIR="$(mktemp -d)"
+trap 'rm -rf "$WORK_DIR"' EXIT
+
+git clone --quiet --depth 1 --branch "$REF" "$REPO_URL" "$WORK_DIR"
 mkdir -p "$TARGET_DIR"
 
-if [ ! -d "$REPO_DIR/.git" ]; then
-  git clone "$REPO_URL" "$REPO_DIR"
-else
-  git -C "$REPO_DIR" fetch --all --prune
-  git -C "$REPO_DIR" pull --ff-only
+secrets="$TARGET_DIR/secrets.yaml"
+if [ -L "$secrets" ]; then
+  if [ ! -e "$secrets" ]; then
+    echo "Chyba: $secrets je symlink na neexistující soubor" >&2
+    exit 1
+  fi
+  cp "$secrets" "$secrets.tmp"
+  mv "$secrets.tmp" "$secrets"
+  echo "secrets.yaml převeden ze symlinku na soubor"
 fi
 
-if [ ! -d "$SOURCE_DIR" ]; then
-  echo "Chyba: zdrojová složka $SOURCE_DIR neexistuje" >&2
-  exit 1
-fi
-
-find "$SOURCE_DIR" -mindepth 1 -maxdepth 1 \
-  ! -name '.git' \
-  ! -name '.secrets' \
-  ! -name 'HomeAssistant' \
-  -print | while IFS= read -r src; do
+for src in "$WORK_DIR/$LOCATION"/*.yaml; do
   name="$(basename "$src")"
+  [ "$name" = "secrets.yaml" ] && continue
   dest="$TARGET_DIR/$name"
-  rm -rf "$dest"
-  ln -s "$SOURCE_REL/$name" "$dest"
+
+  if [ -f "$dest" ] && [ ! -L "$dest" ] && ! grep -qF "url: $REPO_URL" "$dest"; then
+    echo "Přeskočeno: $name je lokální soubor, ne odkaz na repo" >&2
+    continue
+  fi
+
+  rm -f "$dest"
+  cat > "$dest" <<EOF
+packages:
+  device:
+    url: $REPO_URL
+    ref: $REF
+    files: [$LOCATION/$name]
+    refresh: 0s
+EOF
+  echo "Odkaz: $name"
 done
 
-if [ -L "$TEMPLATES_LINK" ] || [ ! -e "$TEMPLATES_LINK" ]; then
-  ln -sfn "$TEMPLATES_SRC_REL" "$TEMPLATES_LINK"
-else
-  echo "Chyba: $TEMPLATES_LINK existuje a není symlink" >&2
-  exit 1
-fi
-
-echo "Hotovo: na obsah $SOURCE_DIR byly vytvořeny symlinky v $TARGET_DIR"
+echo "Hotovo: zařízení z $LOCATION v $TARGET_DIR odkazují na $REPO_URL@$REF"
