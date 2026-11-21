@@ -96,21 +96,19 @@ script:
     then:
       - cover.stop: the_cover
       - delay: 1s
-      - lambda: id(the_cover).position = COVER_OPEN;
-      - cover.close: the_cover
-      - wait_until:
-          condition:
-            lambda: return id(the_cover).current_operation == COVER_OPERATION_IDLE;
-      - delay: 1s
-      - cover.open: the_cover
-      - wait_until:
-          condition:
-            lambda: return id(the_cover).current_operation == COVER_OPERATION_IDLE;
-      - delay: 1s
-      - cover.close: the_cover
-      - wait_until:
-          condition:
-            lambda: return id(the_cover).current_operation == COVER_OPERATION_IDLE;
+      - repeat:
+          count: 2
+          then:
+            - cover.open: the_cover
+            - wait_until:
+                condition:
+                  lambda: return id(the_cover).current_operation == COVER_OPERATION_IDLE;
+            - delay: 1s
+            - cover.close: the_cover
+            - wait_until:
+                condition:
+                  lambda: return id(the_cover).current_operation == COVER_OPERATION_IDLE;
+            - delay: 1s
       - component.update: open_duration
       - component.update: close_duration
 
