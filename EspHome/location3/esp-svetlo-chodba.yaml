@@ -9,3 +9,4 @@ substitutions:
 
 packages:
   penta-mini-template: !include ../templates/template-esp-an-penta-mini-wired-dual-light.yaml
+  bluetooth-proxy: !include ../templates/bluetooth-proxy.yaml
